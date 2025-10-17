@@ -1,21 +1,32 @@
-<!DOCTYPE html>
-<html lang="es">
-<head><meta charset="UTF-8"><title>Ingresar resultados</title></head>
-<body>
-  <h2>Ingresar resultados</h2>
-  {% for diff in ['Easy','Medium','Hard'] %}
-    {% if diff in completed %}
-      <p>{{ diff }}: Ya ingresado hoy.</p>
-    {% else %}
-      <form method="post">
-        <input type="hidden" name="difficulty" value="{{ diff }}">
-        <label>{{ diff }}:</label>
-        <input type="number" name="minutes" min="0" placeholder="minutos" required> :
-        <input type="number" name="seconds" min="0" max="59" placeholder="segundos" required>
+
+{% extends "base.html" %}
+{% block title %}Ingresar resultados · Tiempos App{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1>Ingresar resultados (hoy)</h1>
+    <form method="post" class="submit-grid">
+      {% for d in ["Easy","Medium","Hard"] %}
+        <fieldset class="box">
+          <legend>{{ d }}</legend>
+          {% set is_disabled = submitted_today[d] %}
+          <div class="row">
+            <label>Minutos
+              <input type="number" name="{{ d.lower() }}_min" min="0" placeholder="MM" {% if is_disabled %}disabled{% endif %}>
+            </label>
+            <label>Segundos
+              <input type="number" name="{{ d.lower() }}_sec" min="0" max="59" placeholder="SS" {% if is_disabled %}disabled{% endif %}>
+            </label>
+          </div>
+          {% if is_disabled %}
+            <div class="tag">Ya ingresado hoy</div>
+          {% else %}
+            <small class="muted">Una entrada por día.</small>
+          {% endif %}
+        </fieldset>
+      {% endfor %}
+      <div class="row">
         <button type="submit">Guardar</button>
-      </form>
-    {% endif %}
-  {% endfor %}
-  <a href="/dashboard">Volver</a>
-</body>
-</html>
+      </div>
+    </form>
+  </div>
+{% endblock %}

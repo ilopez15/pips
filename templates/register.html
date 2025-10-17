@@ -1,0 +1,17 @@
+
+{% extends "base.html" %}
+{% block title %}Crear cuenta · Tiempos App{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1>Crear cuenta</h1>
+    <form method="post" class="grid">
+      <label>Usuario
+        <input type="text" name="username" placeholder="elige_un_usuario" required>
+      </label>
+      <label>Contraseña
+        <input type="password" name="password" placeholder="••••••••" required>
+      </label>
+      <button type="submit">Registrar</button>
+    </form>
+  </div>
+{% endblock %}
