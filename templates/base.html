@@ -16,15 +16,11 @@
       <a href="{{ url_for('dashboard') }}" class="brand">PIPS</a>
       <nav>
         {% if g.user %}
-          
-          <nav class="navbar">
-            <span class="hello">Hola, {{ g.user.username }}</span>
-            <a href="{{ url_for('dashboard') }}" class="nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}">Inicio</a>
-            <a href="{{ url_for('submit') }}" class="nav-item {% if request.endpoint == 'submit' %}active{% endif %}">Ingresar resultados</a>
-            <a href="{{ url_for('stats') }}" class="nav-item {% if request.endpoint == 'stats' %}active{% endif %}">Ver estadísticas</a>
-            <a href="{{ url_for('logout') }}" class="nav-item logout">Salir</a>
-          </nav>
-
+          <span class="hello">Hola, {{ g.user.username }}</span>
+          <a href="{{ url_for('dashboard') }}">Inicio</a>
+          <a href="{{ url_for('submit') }}">Ingresar resultados</a>
+          <a href="{{ url_for('stats') }}">Ver estadísticas</a>
+          <a class="logout" href="{{ url_for('logout') }}">Salir</a>
         {% endif %}
       </nav>
     </div>
