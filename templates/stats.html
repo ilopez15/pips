@@ -3,8 +3,7 @@
 {% block title %}Estadísticas · Tiempos App{% endblock %}
 {% block content %}
   <div class="card">
-    <h1>Estadísticas</h1>
-    <p class="muted">Un gráfico por dificultad. El eje X muestra la fecha; el eje Y, el tiempo (mm:ss). Cada línea corresponde a un usuario.</p>
+    <h1>Estadísticas</h1>    
     <div class="charts">
       {% for d in difficulties %}
         <div class="chart-block">
@@ -70,7 +69,7 @@
                   return secondsToMMSS(value);
                 }
               },
-              title: { display: true, text: "Tiempo (mm:ss)" }
+              title: { display: true, text: "Tiempo" }
             },
             x: {
               title: { display: true, text: "Fecha" }
