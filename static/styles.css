@@ -69,3 +69,22 @@ nav a.logout{color:#93c5fd}
 input[type="number"] {
     margin: 0px 10px 0px 10px;
 }
+
+.charts {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.chart-block {
+  width: 100%;
+  /* altura mínima, pero se ajusta */
+  min-height: 300px;
+  max-height: 500px;
+  position: relative; /* necesario para Chart.js responsive */
+}
+
+.chart-block canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
