@@ -125,37 +125,57 @@ button[type="submit"]:disabled {
   box-shadow: none;
 }
 
-/* Estilo base de los enlaces del nav */
+/* Nav container flexible y responsive */
+.site-header nav {
+  display: flex;
+  flex-wrap: wrap;          /* se ajusta a varias líneas si es necesario */
+  gap: 12px;                /* espacio entre cajas */
+  align-items: center;
+}
+
+/* Estilo de cada "caja" del nav */
 .site-header nav a {
-  text-decoration: none;      /* quita subrayado */
-  color: #333;                /* color normal */
-  padding: 8px 16px;          /* espacio dentro del enlace */
-  border-radius: 6px;         /* esquinas redondeadas */
-  transition: all 0.3s ease;  /* transición suave */
+  display: block;
+  padding: 10px 16px;
+  text-decoration: none;
+  color: #333;
+  background-color: #f5f5f5;  /* color de caja claro */
+  border: 1px solid #ddd;     /* borde suave */
+  border-radius: 8px;          /* esquinas redondeadas */
+  transition: all 0.3s ease;
   font-weight: 500;
-  margin-right: 8px;          /* separación entre enlaces */
+  flex: 1;                     /* para que se expandan proporcionalmente */
+  text-align: center;
+  min-width: 120px;            /* evita que sean demasiado pequeños */
 }
 
-/* Hover: cambia color de fondo y texto */
+/* Hover: cambio de fondo y borde */
 .site-header nav a:hover {
-  background-color: #4a90e2;  /* azul de ejemplo */
-  color: white;
-  transform: translateY(-1px); /* opcional: levanta un poquito */
+  background-color: #e0e7ff;  /* azul muy suave */
+  border-color: #4a90e2;      /* borde azul */
+  color: #1a1a1a;
 }
 
-/* Enlace activo (la página actual) */
+/* Activo: página actual */
 .site-header nav a.active {
-  background-color: #357ABD;
-  color: white;
-}
-
-/* Logout diferente color */
-.site-header nav a.logout {
-  background-color: #d62728; /* rojo */
-  color: white;
+  background-color: #c7d2fe;  /* azul suave más marcado */
+  border-color: #4a90e2;
+  color: #1a1a1a;
 }
 
 .site-header nav a.logout:hover {
-  background-color: #b71c1c;
+  background-color: #ffcccc;
+  border-color: #ff1a1a;
+  color: #800000;
+}
+
+/* Opcional: ajusta el tamaño en pantallas pequeñas */
+@media (max-width: 600px) {
+  .site-header nav {
+    justify-content: center;
+  }
+  .site-header nav a {
+    flex: 100%;   /* cada enlace ocupa toda la fila */
+  }
 }
 
