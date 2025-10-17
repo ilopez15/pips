@@ -125,35 +125,41 @@ button[type="submit"]:disabled {
   box-shadow: none;
 }
 
-.navbar {
+/* Contenedor de los links */
+nav {
     display: flex;
-    gap: 12px; /* separación entre "cajas" */
+    gap: 12px; /* espacio entre cada link */
 }
 
-.nav-item {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px 16px;
-    border-radius: 8px;
-    background-color: #1e3a8a; /* azul oscuro */
+/* Links normales: solo texto */
+nav a {
+    display: inline-block;       /* para que padding afecte todo el área */
+    padding: 8px 16px;           /* tamaño de la "caja" */
+    border-radius: 8px;          /* esquinas redondeadas */
+    text-decoration: none;       /* quitar subrayado */
+    color: #1e3a8a;              /* color del texto */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Efecto hover */
+nav a:hover {
+    background-color: #3b82f6;   /* fondo azul claro */
+    color: white;                 /* texto blanco */
+}
+
+/* Link activo (la página actual) */
+nav a.active {
+    background-color: #2563eb;   /* azul intermedio */
     color: white;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
 }
 
-.nav-item:hover {
-    background-color: #3b82f6; /* azul más claro al pasar el mouse */
+/* Link de logout distinto */
+nav a.logout {
+    color: #ef4444;              /* texto rojo */
+    font-weight: 600;
 }
 
-.nav-item.active {
-    background-color: #2563eb; /* azul intermedio para el link activo */
-}
-
-.nav-item.logout {
-    background-color: #ef4444; /* rojo para salir */
-}
-
-.nav-item.logout:hover {
-    background-color: #f87171;
+nav a.logout:hover {
+    background-color: #ef4444;
+    color: white;
 }

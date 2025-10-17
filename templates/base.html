@@ -16,8 +16,9 @@
       <a href="{{ url_for('dashboard') }}" class="brand">PIPS</a>
       <nav>
         {% if g.user %}
-          <span class="hello">Hola, {{ g.user.username }}</span>
+          
           <nav class="navbar">
+            <span class="hello">Hola, {{ g.user.username }}</span>
             <a href="{{ url_for('dashboard') }}" class="nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}">Inicio</a>
             <a href="{{ url_for('submit') }}" class="nav-item {% if request.endpoint == 'submit' %}active{% endif %}">Ingresar resultados</a>
             <a href="{{ url_for('stats') }}" class="nav-item {% if request.endpoint == 'stats' %}active{% endif %}">Ver estadísticas</a>
