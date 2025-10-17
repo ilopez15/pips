@@ -124,3 +124,38 @@ button[type="submit"]:disabled {
   cursor: not-allowed;
   box-shadow: none;
 }
+
+/* Estilo base de los enlaces del nav */
+.site-header nav a {
+  text-decoration: none;      /* quita subrayado */
+  color: #333;                /* color normal */
+  padding: 8px 16px;          /* espacio dentro del enlace */
+  border-radius: 6px;         /* esquinas redondeadas */
+  transition: all 0.3s ease;  /* transición suave */
+  font-weight: 500;
+  margin-right: 8px;          /* separación entre enlaces */
+}
+
+/* Hover: cambia color de fondo y texto */
+.site-header nav a:hover {
+  background-color: #4a90e2;  /* azul de ejemplo */
+  color: white;
+  transform: translateY(-1px); /* opcional: levanta un poquito */
+}
+
+/* Enlace activo (la página actual) */
+.site-header nav a.active {
+  background-color: #357ABD;
+  color: white;
+}
+
+/* Logout diferente color */
+.site-header nav a.logout {
+  background-color: #d62728; /* rojo */
+  color: white;
+}
+
+.site-header nav a.logout:hover {
+  background-color: #b71c1c;
+}
+
