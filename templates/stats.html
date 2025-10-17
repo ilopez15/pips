@@ -64,6 +64,7 @@
           maintainAspectRatio: false,
           scales: {
             y: {
+              min: 0,
               ticks: {
                 callback: function(value, index, ticks) {
                   return secondsToMMSS(value);
