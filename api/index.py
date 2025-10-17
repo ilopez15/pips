@@ -117,8 +117,43 @@ def submit():
 def stats():
     if "user_id" not in session:
         return redirect(url_for("index"))
-    results = Result.query.order_by(Result.date.asc()).all()
-    return render_template("stats.html", results=results)
+
+    # Obtener todos los resultados
+    results = Result.query.join(User).add_columns(
+        User.username, Result.difficulty, Result.date, Result.minutes, Result.seconds
+    ).all()
+
+    difficulties = ["Easy", "Medium", "Hard"]
+    data_by_diff = {}
+
+    for diff in difficulties:
+        # filtrar resultados por dificultad
+        diff_results = [r for r in results if r.difficulty == diff]
+
+        # obtener todas las fechas únicas y ordenarlas
+        dates = sorted({r.date for r in diff_results})
+        labels = [d.strftime("%Y-%m-%d") for d in dates]
+
+        # obtener todos los usuarios que tienen resultados
+        users = sorted({r.username for r in diff_results})
+        datasets = []
+
+        for u in users:
+            # para cada fecha, poner el tiempo en segundos o None si no hay
+            data = []
+            for d in dates:
+                r = next((res for res in diff_results if res.username == u and res.date == d), None)
+                if r:
+                    total_seconds = r.minutes*60 + r.seconds
+                    data.append(total_seconds)
+                else:
+                    data.append(None)
+            datasets.append({"label": u, "data": data})
+
+        data_by_diff[diff] = {"labels": labels, "datasets": datasets}
+
+    return render_template("stats.html", difficulties=difficulties, data_by_diff=data_by_diff)
+
 
 @app.route('/logout')
 def logout():

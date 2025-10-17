@@ -1,19 +1,95 @@
-<!DOCTYPE html>
-<html lang="es">
-<head><meta charset="UTF-8"><title>Estadísticas</title></head>
-<body>
-  <h2>Estadísticas generales</h2>
-  <table border="1">
-    <tr><th>Usuario</th><th>Dificultad</th><th>Fecha</th><th>Tiempo</th></tr>
-    {% for r in results %}
-      <tr>
-        <td>{{ r.user_id }}</td>
-        <td>{{ r.difficulty }}</td>
-        <td>{{ r.date }}</td>
-        <td>{{ '%02d:%02d' % (r.minutes, r.seconds) }}</td>
-      </tr>
-    {% endfor %}
-  </table>
-  <a href="/dashboard">Volver</a>
-</body>
-</html>
+
+{% extends "base.html" %}
+{% block title %}Estadísticas · Tiempos App{% endblock %}
+{% block content %}
+  <div class="card">
+    <h1>Estadísticas</h1>
+    <p class="muted">Un gráfico por dificultad. El eje X muestra la fecha; el eje Y, el tiempo (mm:ss). Cada línea corresponde a un usuario.</p>
+    <div class="charts">
+      {% for d in difficulties %}
+        <div class="chart-block">
+          <h2>{{ d }}</h2>
+          <canvas id="chart_{{ d }}"></canvas>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script>
+    const dataByDiff = {{ data_by_diff|tojson }};
+
+    function pad(n){ return (n<10?'0':'') + n; }
+    function secondsToMMSS(s) {
+      if (s === null || s === undefined) return null;
+      const m = Math.floor(s / 60);
+      const sec = s % 60;
+      return `${pad(m)}:${pad(sec)}`;
+    }
+    // Deterministic color from string (HSL)
+    function stringToColor(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      const h = Math.abs(hash) % 360;
+      return `hsl(${h}, 70%, 45%)`;
+    }
+
+    function buildChart(canvasId, payload) {
+      const ctx = document.getElementById(canvasId);
+      const labels = payload.labels;
+      const datasets = payload.datasets.map(ds => ({
+        label: ds.label,
+        data: ds.data,
+        spanGaps: false,
+        borderColor: stringToColor(ds.label),
+        backgroundColor: stringToColor(ds.label),
+        tension: 0.25,
+        pointRadius: 3,
+      }));
+
+      new Chart(ctx, {
+        type: 'line',
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              ticks: {
+                callback: function(value, index, ticks) {
+                  return secondsToMMSS(value);
+                }
+              },
+              title: { display: true, text: "Tiempo (mm:ss)" }
+            },
+            x: {
+              title: { display: true, text: "Fecha" }
+            }
+          },
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(ctx) {
+                  const v = ctx.parsed.y;
+                  return `${ctx.dataset.label}: ${secondsToMMSS(v)}`;
+                }
+              }
+            },
+            legend: {
+              position: 'bottom'
+            }
+          },
+          elements: {
+            line: { borderWidth: 2 },
+          }
+        }
+      });
+    }
+
+    for (const diff of Object.keys(dataByDiff)) {
+      buildChart(`chart_${diff}`, dataByDiff[diff]);
+    }
+  </script>
+{% endblock %}
