@@ -3,4 +3,4 @@ flask_sqlalchemy
 werkzeug
 gunicorn
 psycopg2-binary
-pytz==2025.10
+pytz
