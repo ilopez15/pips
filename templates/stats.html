@@ -27,28 +27,36 @@
       return `${pad(m)}:${pad(sec)}`;
     }
     // Deterministic color from string (HSL)
-    function stringToColor(str) {
-      let hash = 0;
-      for (let i = 0; i < str.length; i++) {
-        hash = str.charCodeAt(i) + ((hash << 5) - hash);
-      }
-      const h = Math.abs(hash) % 360;
-      return `hsl(${h}, 70%, 45%)`;
+    const palette = [
+      "#1f77b4", // azul
+      "#ff7f0e", // naranja
+      "#2ca02c", // verde
+      "#d62728", // rojo
+      "#9467bd", // morado
+      "#8c564b", // marrón
+      "#e377c2", // rosa
+      "#7f7f7f", // gris
+      "#bcbd22", // amarillo oliva
+      "#17becf", // cian
+    ];
+
+    function getColor(index) {
+      return palette[index % palette.length];
     }
+
 
     function buildChart(canvasId, payload) {
       const ctx = document.getElementById(canvasId);
       const labels = payload.labels;
-      const datasets = payload.datasets.map(ds => ({
+      const datasets = payload.datasets.map((ds, i) => ({
         label: ds.label,
         data: ds.data,
         spanGaps: false,
-        borderColor: stringToColor(ds.label),
-        backgroundColor: stringToColor(ds.label),
+        borderColor: getColor(i),
+        backgroundColor: getColor(i),
         tension: 0.25,
         pointRadius: 3,
       }));
-
       new Chart(ctx, {
         type: 'line',
         data: { labels, datasets },
