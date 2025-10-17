@@ -5,7 +5,7 @@ from datetime import date
 import os
 
 app = Flask(__name__, template_folder="../templates", static_folder="../static")
-app.secret_key = os.environ.get("SECRET_KEY", "supersecretkey")
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersecretkey")
 
 # Configuración base de datos PostgreSQL (variable DATABASE_URL)
 db_url = os.environ.get("DATABASE_URL")
@@ -71,32 +71,36 @@ def dashboard():
         return redirect(url_for("index"))
     return render_template("dashboard.html")
 
-@app.route('/submit')
+# Página de submit (GET y POST combinados)
+@app.route('/submit', methods=["GET","POST"])
 def submit():
     if "user_id" not in session:
         return redirect(url_for("index"))
+    
     user_id = session["user_id"]
     today = date.today()
-    results_today = Result.query.filter_by(user_id=user_id, date=today).all()
-    completed = {r.difficulty for r in results_today}
-    return render_template("submit.html", completed=completed)
-
-@app.route('/submit', methods=["POST"])
-def save_result():
-    if "user_id" not in session:
-        return redirect(url_for("index"))
-    user_id = session["user_id"]
-    difficulty = request.form["difficulty"]
-    minutes = int(request.form["minutes"])
-    seconds = int(request.form["seconds"])
-    today = date.today()
-    existing = Result.query.filter_by(user_id=user_id, difficulty=difficulty, date=today).first()
-    if existing:
-        return redirect(url_for("submit"))
-    result = Result(user_id=user_id, difficulty=difficulty, date=today, minutes=minutes, seconds=seconds)
-    db.session.add(result)
-    db.session.commit()
-    return redirect(url_for("dashboard"))
+    
+    # GET: preparar qué dificultades ya fueron ingresadas
+    submitted_results = Result.query.filter_by(user_id=user_id, date=today).all()
+    submitted_today = {d: False for d in ["Easy","Medium","Hard"]}
+    for r in submitted_results:
+        submitted_today[r.difficulty] = True
+    
+    if request.method == "POST":
+        for diff in ["Easy","Medium","Hard"]:
+            if not submitted_today[diff]:
+                min_field = f"{diff.lower()}_min"
+                sec_field = f"{diff.lower()}_sec"
+                if request.form.get(min_field) and request.form.get(sec_field):
+                    minutes = int(request.form[min_field])
+                    seconds = int(request.form[sec_field])
+                    result = Result(user_id=user_id, difficulty=diff, date=today,
+                                    minutes=minutes, seconds=seconds)
+                    db.session.add(result)
+        db.session.commit()
+        return redirect(url_for("dashboard"))
+    
+    return render_template("submit.html", submitted_today=submitted_today)
 
 @app.route('/stats')
 def stats():
