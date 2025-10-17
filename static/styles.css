@@ -88,3 +88,39 @@ input[type="number"] {
   width: 100% !important;
   height: 100% !important;
 }
+
+/* Botón tipo submit estilizado */
+button[type="submit"] {
+  background-color: #4a90e2; /* azul inicial */
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease; /* transición suave */
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+/* Hover: cambia el color y levanta un poco */
+button[type="submit"]:hover {
+  background-color: #357ABD; /* azul más oscuro */
+  box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+}
+
+/* Active: efecto al hacer click */
+button[type="submit"]:active {
+  background-color: #2e5c8a; /* azul aún más oscuro */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transform: translateY(0);
+}
+
+/* Disabled: si algún input está deshabilitado, el botón también */
+button[type="submit"]:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  box-shadow: none;
+}
