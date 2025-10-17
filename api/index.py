@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, session, g, flash
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import date
+from datetime import datetime
 import os
+import pytz
 
 app = Flask(__name__, template_folder="../templates", static_folder="../static")
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersecretkey")
@@ -88,7 +89,8 @@ def submit():
         return redirect(url_for("index"))
     
     user_id = session["user_id"]
-    today = date.today()
+    local_tz = pytz.timezone("Europe/Paris")  # o tu zona horaria
+    today = datetime.now(local_tz).date()
     
     # Ver qué dificultades ya fueron ingresadas hoy
     submitted_results = Result.query.filter_by(user_id=user_id, date=today).all()
@@ -98,7 +100,7 @@ def submit():
     print(f"[DEBUG] today = {today}")
     print(f"[DEBUG] submitted_results = {submitted_results}")
     print(f"[DEBUG] submitted_today = {submitted_today}")
-    
+
     if request.method == "POST":
         for diff in ["Easy","Medium","Hard"]:
             if not submitted_today[diff]:
