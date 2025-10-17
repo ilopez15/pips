@@ -62,7 +62,7 @@ nav a.logout{color:#93c5fd}
 .box legend{font-weight:800; color:#cde7ff; padding:0 6px}
 .row{display:flex; gap:12px; align-items:end; flex-wrap:wrap}
 .row input{min-width:110px}
-.tag{display:inline-block; padding:6px 10px; border-radius:999px; font-weight:700; background:rgba(125,211,252,.16); color:#93c5fd; border:1px solid rgba(125,211,252,.35); margin-top: 10px;}
+.tag{display:inline-block; padding:6px 10px; border-radius:999px; font-weight:700; background:rgba(125,211,252,.16); color:#93c5fd; border:1px solid rgba(125,211,252,.35); margin-top: 16px;}
 .charts{display:grid; gap:28px}
 .chart-block{border:1px solid var(--border); border-radius:14px; padding:16px; height:360px; background:#0c1220}
 .chart-block h2{margin:0 0 12px 0}
