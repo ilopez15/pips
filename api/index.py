@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, g, flash
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import date
@@ -36,34 +36,45 @@ class Result(db.Model):
     minutes = db.Column(db.Integer, nullable=False)
     seconds = db.Column(db.Integer, nullable=False)
 
+# Rellenar g.user para base.html
+@app.before_request
+def load_user():
+    g.user = None
+    if "user_id" in session:
+        g.user = User.query.get(session["user_id"])
+
 # Rutas
-@app.route('/')
+@app.route('/', methods=["GET","POST"])
 def index():
     if "user_id" in session:
         return redirect(url_for("dashboard"))
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        user = User.query.filter_by(username=username).first()
+        if user and user.check_password(password):
+            session["user_id"] = user.id
+            return redirect(url_for("dashboard"))
+        flash("Usuario o contraseña incorrectos", "error")
     return render_template("login.html")
 
-@app.route('/login', methods=["POST"])
-def login():
-    username = request.form["username"]
-    password = request.form["password"]
-    user = User.query.filter_by(username=username).first()
-    if user and user.check_password(password):
-        session["user_id"] = user.id
-        return redirect(url_for("dashboard"))
-    return render_template("login.html", error="Usuario o contraseña incorrectos")
-
-@app.route('/register', methods=["POST"])
+@app.route('/register', methods=["GET","POST"])
 def register():
-    username = request.form["username"]
-    password = request.form["password"]
-    if User.query.filter_by(username=username).first():
-        return render_template("login.html", error="El usuario ya existe")
-    user = User(username=username)
-    user.set_password(password)
-    db.session.add(user)
-    db.session.commit()
-    return render_template("login.html", success="Usuario creado correctamente")
+    if "user_id" in session:
+        return redirect(url_for("dashboard"))
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        if User.query.filter_by(username=username).first():
+            flash("El usuario ya existe", "error")
+            return render_template("register.html")
+        user = User(username=username)
+        user.set_password(password)
+        db.session.add(user)
+        db.session.commit()
+        flash("Usuario creado correctamente", "success")
+        return redirect(url_for("index"))
+    return render_template("register.html")
 
 @app.route('/dashboard')
 def dashboard():
@@ -71,7 +82,6 @@ def dashboard():
         return redirect(url_for("index"))
     return render_template("dashboard.html")
 
-# Página de submit (GET y POST combinados)
 @app.route('/submit', methods=["GET","POST"])
 def submit():
     if "user_id" not in session:
@@ -80,7 +90,7 @@ def submit():
     user_id = session["user_id"]
     today = date.today()
     
-    # GET: preparar qué dificultades ya fueron ingresadas
+    # Ver qué dificultades ya fueron ingresadas hoy
     submitted_results = Result.query.filter_by(user_id=user_id, date=today).all()
     submitted_today = {d: False for d in ["Easy","Medium","Hard"]}
     for r in submitted_results:
@@ -98,6 +108,7 @@ def submit():
                                     minutes=minutes, seconds=seconds)
                     db.session.add(result)
         db.session.commit()
+        flash("Resultados guardados", "success")
         return redirect(url_for("dashboard"))
     
     return render_template("submit.html", submitted_today=submitted_today)
