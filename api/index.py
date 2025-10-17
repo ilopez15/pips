@@ -95,6 +95,9 @@ def submit():
     submitted_today = {d: False for d in ["Easy","Medium","Hard"]}
     for r in submitted_results:
         submitted_today[r.difficulty] = True
+    print(f"[DEBUG] today = {today}")
+    print(f"[DEBUG] submitted_results = {submitted_results}")
+    print(f"[DEBUG] submitted_today = {submitted_today}")
     
     if request.method == "POST":
         for diff in ["Easy","Medium","Hard"]:
