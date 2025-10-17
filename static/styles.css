@@ -125,41 +125,41 @@ button[type="submit"]:disabled {
   box-shadow: none;
 }
 
-/* Contenedor de los links */
-nav {
+/* Navbar general */
+header.site-header nav {
     display: flex;
-    gap: 12px; /* espacio entre cada link */
+    height: 100%; /* para que los links ocupen toda la altura del header */
 }
 
-/* Links normales: solo texto */
-nav a {
-    display: inline-block;       /* para que padding afecte todo el área */
-    padding: 8px 16px;           /* tamaño de la "caja" */
-    border-radius: 8px;          /* esquinas redondeadas */
-    text-decoration: none;       /* quitar subrayado */
-    color: #1e3a8a;              /* color del texto */
+/* Links */
+header.site-header nav a {
+    display: flex;
+    align-items: center;       /* centrar texto verticalmente */
+    text-decoration: none;
+    color: #1e3a8a;           /* azul oscuro */
+    padding: 0 16px;           /* solo horizontal, nada vertical */
+    height: 100%;              /* ocupa toda la altura de la navbar */
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Efecto hover */
-nav a:hover {
-    background-color: #3b82f6;   /* fondo azul claro */
-    color: white;                 /* texto blanco */
-}
-
-/* Link activo (la página actual) */
-nav a.active {
-    background-color: #2563eb;   /* azul intermedio */
+/* Hover: todo el rectángulo cambia */
+header.site-header nav a:hover {
+    background-color: #3b82f6; /* azul claro */
     color: white;
 }
 
-/* Link de logout distinto */
-nav a.logout {
-    color: #ef4444;              /* texto rojo */
-    font-weight: 600;
+/* Activo: la página actual */
+header.site-header nav a.active {
+    background-color: #2563eb; /* azul intermedio */
+    color: white;
 }
 
-nav a.logout:hover {
+/* Logout separado si quieres */
+header.site-header nav a.logout {
+    color: #ef4444; /* rojo */
+}
+
+header.site-header nav a.logout:hover {
     background-color: #ef4444;
     color: white;
 }
