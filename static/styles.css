@@ -125,57 +125,127 @@ button[type="submit"]:disabled {
   box-shadow: none;
 }
 
-/* Nav container flexible y responsive */
+/* Reset y base */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "Inter", sans-serif;
+}
+
+/* Navbar principal */
+.site-header {
+    background: #0d1f3c; /* azul oscuro */
+    padding: 0 20px;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.site-header .header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 70px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.site-header .brand {
+    font-size: 28px;
+    font-weight: 700;
+    color: #4facfe;
+    text-decoration: none;
+}
+
 .site-header nav {
-  display: flex;
-  flex-wrap: wrap;          /* se ajusta a varias líneas si es necesario */
-  gap: 12px;                /* espacio entre cajas */
-  align-items: center;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-/* Estilo de cada "caja" del nav */
+.site-header nav span.hello {
+    color: #ffffff;
+    font-weight: 500;
+    margin-right: 12px;
+}
+
 .site-header nav a {
-  display: block;
-  padding: 10px 16px;
-  text-decoration: none;
-  color: #333;
-  background-color: #f5f5f5;  /* color de caja claro */
-  border: 1px solid #ddd;     /* borde suave */
-  border-radius: 8px;          /* esquinas redondeadas */
-  transition: all 0.3s ease;
-  font-weight: 500;
-  flex: 1;                     /* para que se expandan proporcionalmente */
-  text-align: center;
-  min-width: 120px;            /* evita que sean demasiado pequeños */
+    text-decoration: none;
+    color: #ffffff;
+    padding: 8px 14px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-weight: 500;
 }
 
-/* Hover: cambio de fondo y borde */
 .site-header nav a:hover {
-  background-color: #e0e7ff;  /* azul muy suave */
-  border-color: #4a90e2;      /* borde azul */
-  color: #1a1a1a;
+    background: #3a7bd5; /* azul brillante */
+    color: #ffffff;
 }
 
-/* Activo: página actual */
 .site-header nav a.active {
-  background-color: #c7d2fe;  /* azul suave más marcado */
-  border-color: #4a90e2;
-  color: #1a1a1a;
+    background: #1e3c72;
+    color: #ffffff;
+}
+
+.site-header nav a.logout {
+    background: #4facfe;
 }
 
 .site-header nav a.logout:hover {
-  background-color: #ffcccc;
-  border-color: #ff1a1a;
-  color: #800000;
+    background: #00f2fe;
 }
 
-/* Opcional: ajusta el tamaño en pantallas pequeñas */
-@media (max-width: 600px) {
-  .site-header nav {
-    justify-content: center;
-  }
-  .site-header nav a {
-    flex: 100%;   /* cada enlace ocupa toda la fila */
-  }
+/* Flash messages */
+.flash-wrap {
+    margin: 10px 0;
 }
 
+.flash {
+    padding: 10px 15px;
+    border-radius: 6px;
+    margin-bottom: 5px;
+}
+
+.flash.error { background: #f44336; color: white; }
+.flash.success { background: #4caf50; color: white; }
+
+/* Contenedor principal */
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+/* Footer */
+.site-footer {
+    text-align: center;
+    padding: 15px 0;
+    color: #888;
+    font-size: 14px;
+    background: #0d1f3c;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+    .site-header .header-inner {
+        flex-direction: column;
+        height: auto;
+        padding: 10px 0;
+    }
+    .site-header nav {
+        flex-direction: column;
+        width: 100%;
+        gap: 8px;
+        margin-top: 5px;
+    }
+    .site-header nav span.hello {
+        margin-bottom: 5px;
+    }
+    .site-header nav a {
+        width: 90%;
+        text-align: center;
+    }
+}
