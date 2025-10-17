@@ -1,10 +1,13 @@
-<!DOCTYPE html>
-<html lang="es">
-<head><meta charset="UTF-8"><title>Dashboard</title></head>
-<body>
-  <h2>Panel principal</h2>
-  <a href="/submit">Ingresar resultados</a><br>
-  <a href="/stats">Ver estadísticas</a><br>
-  <a href="/logout">Cerrar sesión</a>
-</body>
-</html>
+
+{% extends "base.html" %}
+{% block title %}Inicio · Tiempos App{% endblock %}
+{% block content %}
+  <div class="hero">
+    <h1>Panel principal</h1>
+    <p>Elige una opción para continuar.</p>
+    <div class="actions">
+      <a class="btn" href="{{ url_for('submit') }}">Ingresar resultados</a>
+      <a class="btn outline" href="{{ url_for('stats') }}">Ver estadísticas</a>
+    </div>
+  </div>
+{% endblock %}

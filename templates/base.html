@@ -1,0 +1,49 @@
+
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Tiempos App{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="{{ url_for('dashboard') }}" class="brand">Tiempos<span>App</span></a>
+      <nav>
+        {% if g.user %}
+          <span class="hello">Hola, {{ g.user.username }}</span>
+          <a href="{{ url_for('dashboard') }}">Inicio</a>
+          <a href="{{ url_for('submit') }}">Ingresar resultados</a>
+          <a href="{{ url_for('stats') }}">Ver estadísticas</a>
+          <a class="logout" href="{{ url_for('logout') }}">Salir</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-wrap">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      Hecho con Flask + SQLite · © {{ 2025 }}
+    </div>
+  </footer>
+</body>
+</html>
