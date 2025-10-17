@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><title>Estadísticas</title></head>
+<body>
+  <h2>Estadísticas generales</h2>
+  <table border="1">
+    <tr><th>Usuario</th><th>Dificultad</th><th>Fecha</th><th>Tiempo</th></tr>
+    {% for r in results %}
+      <tr>
+        <td>{{ r.user_id }}</td>
+        <td>{{ r.difficulty }}</td>
+        <td>{{ r.date }}</td>
+        <td>{{ '%02d:%02d' % (r.minutes, r.seconds) }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+  <a href="/dashboard">Volver</a>
+</body>
+</html>
