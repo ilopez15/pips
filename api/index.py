@@ -73,7 +73,7 @@ def fill_missing_results():
                 )
                 db.session.add(new_result)
     db.session.commit()
-    print(f"[AUTO] Resultados faltantes rellenados para {yesterday}")
+    
 
 # Rellenar g.user para base.html
 @app.before_request
@@ -90,7 +90,6 @@ def auto_update():
     today = datetime.now(local_tz).date()
 
     if last_update_date != today:
-        print(f"[AUTO] Ejecutando actualización diaria para {today}")
         fill_missing_results()
         last_update_date = today
 
