@@ -5,6 +5,8 @@ from datetime import datetime
 import os
 import pytz
 
+last_update_date = None
+
 app = Flask(__name__, template_folder="../templates", static_folder="../static")
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersecretkey")
 
@@ -37,12 +39,61 @@ class Result(db.Model):
     minutes = db.Column(db.Integer, nullable=False)
     seconds = db.Column(db.Integer, nullable=False)
 
+def fill_missing_results():
+    local_tz = pytz.timezone("Europe/Paris")
+    today = datetime.now(local_tz).date()
+    yesterday = today.replace(day=today.day - 1)
+
+    difficulties = ["Easy", "Medium", "Hard"]
+    users = User.query.all()
+
+    for diff in difficulties:
+        # peor resultado del día anterior (mayor tiempo total)
+        worst = (
+            Result.query.filter_by(date=yesterday, difficulty=diff)
+            .order_by(Result.minutes.desc(), Result.seconds.desc())
+            .first()
+        )
+
+        if not worst:
+            continue  # si nadie jugó esa dificultad
+
+        for u in users:
+            has_result = (
+                Result.query.filter_by(user_id=u.id, date=yesterday, difficulty=diff).first()
+                is not None
+            )
+            if not has_result:
+                new_result = Result(
+                    user_id=u.id,
+                    difficulty=diff,
+                    date=yesterday,
+                    minutes=worst.minutes,
+                    seconds=worst.seconds,
+                )
+                db.session.add(new_result)
+    db.session.commit()
+    print(f"[AUTO] Resultados faltantes rellenados para {yesterday}")
+
 # Rellenar g.user para base.html
 @app.before_request
 def load_user():
     g.user = None
     if "user_id" in session:
         g.user = User.query.get(session["user_id"])
+
+
+@app.before_request
+def auto_update():
+    global last_update_date
+    local_tz = pytz.timezone("Europe/Paris")
+    today = datetime.now(local_tz).date()
+
+    if last_update_date != today:
+        print(f"[AUTO] Ejecutando actualización diaria para {today}")
+        fill_missing_results()
+        last_update_date = today
+
 
 # Rutas
 @app.route('/', methods=["GET","POST"])
