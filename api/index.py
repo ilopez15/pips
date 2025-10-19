@@ -93,7 +93,7 @@ def auto_update():
         fill_missing_results()
         last_update_date = today
 
-
+b = True
 # Rutas
 @app.route('/', methods=["GET","POST"])
 def index():
