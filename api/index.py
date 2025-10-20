@@ -209,6 +209,11 @@ def stats():
 
     return render_template("stats.html", difficulties=difficulties, data_by_diff=data_by_diff)
 
+@app.route('/personalstats')
+def personalstats():
+    if "user_id" not in session:
+        return redirect(url_for("index"))
+    return render_template("personalstats.html")
 
 @app.route('/logout')
 def logout():
