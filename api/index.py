@@ -187,7 +187,7 @@ def stats():
 
         # obtener todas las fechas únicas y ordenarlas
         dates = sorted({r.date for r in diff_results})
-        labels = [d.strftime("%Y-%m-%d") for d in dates]
+        labels = [d.strftime("%d/%m") for d in dates]
 
         # obtener todos los usuarios que tienen resultados
         users = sorted({r.username for r in diff_results})
