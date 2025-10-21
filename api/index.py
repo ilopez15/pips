@@ -205,7 +205,7 @@ def stats():
                 "label": "Promedio histórico",
                 "data": avg_data,
                 "borderDash": [5, 5],  # línea punteada
-                "borderColor": "rgba(0, 0, 0, 0.6)",  # gris oscuro
+                "borderColor": "rgba(255, 255, 255, 0.8)",
                 "backgroundColor": "transparent",
                 "tension": 0,
                 "pointRadius": 0
