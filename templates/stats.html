@@ -51,11 +51,13 @@
         label: ds.label,
         data: ds.data,
         spanGaps: false,
-        borderColor: getColor(i),
-        backgroundColor: getColor(i),
-        tension: 0.25,
-        pointRadius: 3,
+        borderColor: ds.borderColor || getColor(i),
+        backgroundColor: ds.backgroundColor || getColor(i),
+        borderDash: ds.borderDash || [],
+        tension: ds.tension !== undefined ? ds.tension : 0.25,
+        pointRadius: ds.pointRadius !== undefined ? ds.pointRadius : 3,
       }));
+
       new Chart(ctx, {
         type: 'line',
         data: { labels, datasets },

@@ -192,6 +192,24 @@ def stats():
         # obtener todos los usuarios que tienen resultados
         users = sorted({r.username for r in diff_results})
         datasets = []
+                # Calcular promedio histórico (en segundos)
+        all_seconds = [
+            r.minutes * 60 + r.seconds
+            for r in diff_results
+        ]
+        avg_historical = sum(all_seconds) / len(all_seconds) if all_seconds else None
+
+        if avg_historical is not None:
+            avg_data = [avg_historical for _ in dates]
+            datasets.append({
+                "label": "Promedio histórico",
+                "data": avg_data,
+                "borderDash": [5, 5],  # línea punteada
+                "borderColor": "rgba(0, 0, 0, 0.6)",  # gris oscuro
+                "backgroundColor": "transparent",
+                "tension": 0,
+                "pointRadius": 0
+            })
 
         for u in users:
             # para cada fecha, poner el tiempo en segundos o None si no hay
