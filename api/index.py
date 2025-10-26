@@ -231,12 +231,6 @@ def stats():
 def personalstats():
     if "user_id" not in session:
         return redirect(url_for("index"))
-    return render_template("personalstats.html")
-
-@app.route('/personalstats')
-def personalstats():
-    if "user_id" not in session:
-        return redirect(url_for("index"))
     user_id = session["user_id"]
 
     q = (Result.query
