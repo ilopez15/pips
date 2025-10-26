@@ -233,6 +233,49 @@ def personalstats():
         return redirect(url_for("index"))
     return render_template("personalstats.html")
 
+@app.route('/personalstats')
+def personalstats():
+    if "user_id" not in session:
+        return redirect(url_for("index"))
+    user_id = session["user_id"]
+
+    q = (Result.query
+         .filter_by(user_id=user_id)
+         .order_by(Result.date.asc()))
+    data = q.all()
+
+    # Armar estructura {diff: {labels:[], datasets:[{label,data}]}}
+    difficulties = ["Easy","Medium","Hard"]
+    by_diff = {d: [] for d in difficulties}
+    for r in data:
+        by_diff[r.difficulty].append(r)
+
+    data_by_diff = {}
+    for d in difficulties:
+        rows = by_diff[d]
+        dates = [r.date.strftime("%d/%m") for r in rows]
+        vals = [r.total_seconds for r in rows]
+        # PB y promedio 7 días (rolling simple)
+        pb = min(vals) if vals else None
+        rolling = []
+        k = 7
+        for i in range(len(vals)):
+            window = vals[max(0, i-k+1): i+1]
+            rolling.append(sum(window)/len(window))
+        datasets = []
+        if vals:
+            datasets.append({"label":"Tus tiempos","data":vals})
+            datasets.append({
+                "label":"Promedio 7 días",
+                "data":rolling,
+                "borderDash":[6,4],
+                "pointRadius":0,
+                "tension":0
+            })
+        data_by_diff[d] = {"labels": dates, "datasets": datasets, "pb": pb}
+
+    return render_template("personalstats.html", data_by_diff=data_by_diff)
+
 @app.route('/logout')
 def logout():
     session.pop("user_id", None)
