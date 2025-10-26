@@ -1,12 +1,99 @@
-
 {% extends "base.html" %}
 {% block title %}Estadísticas personales · PIPS{% endblock %}
+
 {% block content %}
-  <div class="hero">
+  <div class="card">
     <h1>Estadísticas personales</h1>
-    <div class="actions">
-      <a class="btn" href="{{ url_for('submit') }}">Ingresar resultados</a>
-      <a class="btn outline" href="{{ url_for('stats') }}">Ver estadísticas</a>
+
+    {% set has_data = false %}
+    {% for d in difficulties %}
+      {% if data_by_diff[d].labels|length > 0 %}
+        {% set has_data = true %}
+      {% endif %}
+    {% endfor %}
+
+    {% if not has_data %}
+      <p class="muted">Todavía no tienes resultados cargados. Ingresa tus tiempos en <a href="{{ url_for('submit') }}">Ingresar resultados</a>.</p>
+    {% endif %}
+
+    <div class="charts">
+      {% for d in difficulties %}
+        <div class="chart-block">
+          <h2>{{ d }}</h2>
+          <canvas id="chart_{{ d }}"></canvas>
+        </div>
+      {% endfor %}
     </div>
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script>
+    const dataByDiff = {{ data_by_diff|tojson }};
+
+    function pad(n){ return (n<10?'0':'') + n; }
+    function secondsToMMSS(s) {
+      if (s === null || s === undefined) return null;
+      const m = Math.floor(s / 60);
+      const sec = s % 60;
+      return `${pad(m)}:${pad(sec)}`;
+    }
+
+    // Paleta igual que en stats.html
+    const palette = [
+      "#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd",
+      "#8c564b","#e377c2","#7f7f7f","#bcbd22","#17becf"
+    ];
+    function getColor(index) { return palette[index % palette.length]; }
+
+    function buildChart(canvasId, payload) {
+      const ctx = document.getElementById(canvasId);
+      const labels = payload.labels;
+      const datasets = payload.datasets.map((ds, i) => ({
+        label: ds.label,
+        data: ds.data,
+        spanGaps: false,
+        borderColor: ds.borderColor || getColor(i),
+        backgroundColor: ds.backgroundColor || getColor(i),
+        borderDash: ds.borderDash || [],
+        tension: ds.tension !== undefined ? ds.tension : 0.25,
+        pointRadius: ds.pointRadius !== undefined ? ds.pointRadius : 3,
+      }));
+
+      new Chart(ctx, {
+        type: 'line',
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              min: 0,
+              ticks: {
+                callback: function(value) { return secondsToMMSS(value); }
+              },
+              title: { display: true, text: "Tiempo" }
+            },
+            x: { title: { display: true, text: "Fecha" } }
+          },
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(ctx) {
+                  const v = ctx.parsed.y;
+                  return `${ctx.dataset.label}: ${secondsToMMSS(v)}`;
+                }
+              }
+            },
+            legend: { position: 'bottom' }
+          },
+          elements: { line: { borderWidth: 2 } }
+        }
+      });
+    }
+
+    for (const diff of Object.keys(dataByDiff)) {
+      buildChart(`chart_${diff}`, dataByDiff[diff]);
+    }
+  </script>
 {% endblock %}
+

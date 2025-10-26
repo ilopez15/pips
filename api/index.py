@@ -231,7 +231,52 @@ def stats():
 def personalstats():
     if "user_id" not in session:
         return redirect(url_for("index"))
-    return render_template("personalstats.html")
+
+    user_id = session["user_id"]
+
+    difficulties = ["Easy", "Medium", "Hard"]
+    data_by_diff = {}
+
+    for diff in difficulties:
+        # Trae solo los resultados del usuario autenticado para esa dificultad
+        diff_results = (
+            Result.query
+                  .filter_by(user_id=user_id, difficulty=diff)
+                  .order_by(Result.date.asc())
+                  .all()
+        )
+
+        # Ejes del chart
+        labels = [r.date.strftime("%d/%m") for r in diff_results]
+        values = [r.minutes * 60 + r.seconds for r in diff_results]
+
+        datasets = []
+        # Línea de "Promedio histórico" (del usuario, no del grupo)
+        if values:
+            avg = sum(values) / len(values)
+            datasets.append({
+                "label": "Promedio histórico",
+                "data": [avg] * len(values),
+                "borderDash": [5, 5],
+                "borderColor": "rgba(255, 255, 255, 0.8)",
+                "backgroundColor": "transparent",
+                "tension": 0,
+                "pointRadius": 0
+            })
+
+            # Serie del usuario
+            datasets.append({
+                "label": "Tus tiempos",
+                "data": values
+            })
+
+        data_by_diff[diff] = {"labels": labels, "datasets": datasets}
+
+    return render_template(
+        "personalstats.html",
+        difficulties=difficulties,
+        data_by_diff=data_by_diff
+    )
 
 @app.route('/logout')
 def logout():
