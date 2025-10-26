@@ -1,12 +1,51 @@
-
 {% extends "base.html" %}
 {% block title %}Estadísticas personales · PIPS{% endblock %}
 {% block content %}
-  <div class="hero">
-    <h1>Estadísticas personales</h1>
-    <div class="actions">
-      <a class="btn" href="{{ url_for('submit') }}">Ingresar resultados</a>
-      <a class="btn outline" href="{{ url_for('stats') }}">Ver estadísticas</a>
+  <div class="card">
+    <h1>Tu rendimiento</h1>
+    <div class="charts">
+      {% for d, payload in data_by_diff.items() %}
+        <div class="chart-block">
+          <h2>{{ d }} {% if payload.pb %}<span class="tag">PB: {{ (payload.pb // 60)|int }}:{{ "%02d"|format(payload.pb % 60) }}</span>{% endif %}</h2>
+          <canvas id="chart_{{ d }}"></canvas>
+        </div>
+      {% endfor %}
     </div>
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script>
+    const dataByDiff = {{ data_by_diff|tojson }};
+    function pad(n){ return (n<10?'0':'') + n; }
+    function secondsToMMSS(s){ if(s==null) return null; const m=Math.floor(s/60), sec=s%60; return `${pad(m)}:${pad(sec)}`; }
+    const palette = ["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd","#8c564b","#e377c2","#7f7f7f","#bcbd22","#17becf"];
+    function getColor(i){ return palette[i % palette.length]; }
+
+    function buildChart(id, p){
+      const ctx=document.getElementById(id);
+      const datasets=p.datasets.map((ds,i)=>({
+        label: ds.label, data: ds.data, spanGaps:false,
+        borderColor: ds.borderColor || getColor(i),
+        backgroundColor: ds.backgroundColor || getColor(i),
+        borderDash: ds.borderDash || [],
+        tension: ds.tension ?? 0.25,
+        pointRadius: ds.pointRadius ?? 3
+      }));
+      new Chart(ctx,{
+        type:'line',
+        data:{labels:p.labels, datasets},
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          scales:{ y:{ min:0, ticks:{callback:(v)=>secondsToMMSS(v)}, title:{display:true,text:"Tiempo"} },
+                   x:{ title:{display:true,text:"Fecha"} } },
+          plugins:{ tooltip:{ callbacks:{ label:(c)=>`${c.dataset.label}: ${secondsToMMSS(c.parsed.y)}` } },
+                    legend:{ position:'bottom' } },
+          elements:{ line:{ borderWidth:2 } }
+        }
+      });
+    }
+
+    Object.keys(dataByDiff).forEach(d => buildChart(`chart_${d}`, dataByDiff[d]));
+  </script>
 {% endblock %}
+
