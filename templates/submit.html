@@ -9,13 +9,33 @@
         <fieldset class="box">
           <legend>{{ d }}</legend>
           {% set is_disabled = submitted_today[d] %}
-          <div class="row">
-            <label>Minutos
-              <input type="number" name="{{ d.lower() }}_min" min="0" placeholder="MM" {% if is_disabled %}disabled{% endif %}>
-            </label>
-            <label>Segundos
-              <input type="number" name="{{ d.lower() }}_sec" min="0" max="59" placeholder="SS" {% if is_disabled %}disabled{% endif %}>
-            </label>
+          <div class="time-input">
+            <label class="sr-only" for="{{ d|lower }}_min">Minutos</label>
+            <input
+              class="time-field"
+              id="{{ d|lower }}_min"
+              type="number"
+              name="{{ d|lower }}_min"
+              min="0"
+              step="1"
+              inputmode="numeric"
+              placeholder="MM"
+              {% if is_disabled %}disabled{% endif %}
+            >
+            <span class="time-sep">:</span>
+            <label class="sr-only" for="{{ d|lower }}_sec">Segundos</label>
+            <input
+              class="time-field"
+              id="{{ d|lower }}_sec"
+              type="number"
+              name="{{ d|lower }}_sec"
+              min="0"
+              max="59"
+              step="1"
+              inputmode="numeric"
+              placeholder="SS"
+              {% if is_disabled %}disabled{% endif %}
+            >
           </div>
           {% if is_disabled %}
             <div class="tag">Ya ingresado hoy</div>
