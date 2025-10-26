@@ -5,13 +5,6 @@
   <div class="card">
     <h1>Estadísticas personales</h1>
 
-    {% set has_data = false %}
-    {% for d in difficulties %}
-      {% if data_by_diff[d].labels|length > 0 %}
-        {% set has_data = true %}
-      {% endif %}
-    {% endfor %}
-
     {% if not has_data %}
       <p class="muted">Todavía no tienes resultados cargados. Ingresa tus tiempos en <a href="{{ url_for('submit') }}">Ingresar resultados</a>.</p>
     {% endif %}

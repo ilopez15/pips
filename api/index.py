@@ -233,25 +233,19 @@ def personalstats():
         return redirect(url_for("index"))
 
     user_id = session["user_id"]
-
     difficulties = ["Easy", "Medium", "Hard"]
     data_by_diff = {}
 
     for diff in difficulties:
-        # Trae solo los resultados del usuario autenticado para esa dificultad
-        diff_results = (
-            Result.query
-                  .filter_by(user_id=user_id, difficulty=diff)
-                  .order_by(Result.date.asc())
-                  .all()
-        )
+        diff_results = (Result.query
+                        .filter_by(user_id=user_id, difficulty=diff)
+                        .order_by(Result.date.asc())
+                        .all())
 
-        # Ejes del chart
         labels = [r.date.strftime("%d/%m") for r in diff_results]
         values = [r.minutes * 60 + r.seconds for r in diff_results]
 
         datasets = []
-        # Línea de "Promedio histórico" (del usuario, no del grupo)
         if values:
             avg = sum(values) / len(values)
             datasets.append({
@@ -263,20 +257,20 @@ def personalstats():
                 "tension": 0,
                 "pointRadius": 0
             })
-
-            # Serie del usuario
-            datasets.append({
-                "label": "Tus tiempos",
-                "data": values
-            })
+            datasets.append({"label": "Tus tiempos", "data": values})
 
         data_by_diff[diff] = {"labels": labels, "datasets": datasets}
+
+    # 👇 calcula si hay al menos una etiqueta (dato) en cualquier dificultad
+    has_data = any(len(data_by_diff[d]["labels"]) > 0 for d in difficulties)
 
     return render_template(
         "personalstats.html",
         difficulties=difficulties,
-        data_by_diff=data_by_diff
+        data_by_diff=data_by_diff,
+        has_data=has_data  # 👈 pásalo al template
     )
+
 
 @app.route('/logout')
 def logout():
