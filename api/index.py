@@ -43,6 +43,7 @@ def fill_missing_results():
     local_tz = pytz.timezone("Europe/Paris")
     today = datetime.now(local_tz).date()
     yesterday = today - datetime.timedelta(days=1)
+    print(yesterday)
 
     difficulties = ["Easy", "Medium", "Hard"]
     users = User.query.all()
