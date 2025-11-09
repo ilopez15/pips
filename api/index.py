@@ -5,8 +5,8 @@ from datetime import datetime, timedelta
 import os
 import pytz
 from dotenv import load_dotenv
-load_dotenv()  # carga las variables del archivo .env
-
+if os.environ.get("FLASK_ENV") == "development":
+    load_dotenv()
 
 last_update_date = None
 
