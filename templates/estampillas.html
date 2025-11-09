@@ -2,6 +2,7 @@
 {% extends "base.html" %}
 {% block title %}Estampillas · PIPS{% endblock %}
 {% block content %}
+{% if g.user.username != 'ilopez15' %}
 <div class="overlay">
     <div class="maintenance">
         <div class="maintenance-text">
@@ -10,7 +11,19 @@
         
         <button class="cp-orange" onclick="location.href='{{ url_for('dashboard') }}'">Okay</button>
     </div>
-</div>
+</div> 
+{% endif %}
 
 <h1>Estampillas</h1>
+<div class="container_estampillas">
+    {% for stamp in stamps %}
+    <div class="stamp {% if stamp.id not in user_stamps %}locked{% endif %}" data-info="{{ stamp.description }}" data-title=" {{stamp.name}}">
+        <img src="{{ url_for('static', filename='images/stamps/' + stamp.image) }}" alt="{{ stamp.name }}">
+        <div class="tooltip-content">
+            <span class="tooltip-title">{{ stamp.name }}</span>
+            <span class="tooltip-text">{{ stamp.description }}</span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
 {% endblock %}

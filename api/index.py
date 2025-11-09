@@ -6,8 +6,8 @@ import os
 import pytz
 
 # from dotenv import load_dotenv
-# if os.environ.get("FLASK_ENV") == "development":
-#     load_dotenv()
+
+# load_dotenv()
 
 last_update_date = None
 
@@ -42,6 +42,17 @@ class Result(db.Model):
     date = db.Column(db.Date, nullable=False)
     minutes = db.Column(db.Integer, nullable=False)
     seconds = db.Column(db.Integer, nullable=False)
+
+class Stamp(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    image = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.String(255), nullable=False)
+
+class UserStamp(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    stamp_id = db.Column(db.Integer, db.ForeignKey('stamp.id'), nullable=False)
 
 def fill_missing_results():
     local_tz = pytz.timezone("Europe/Paris")
@@ -280,7 +291,16 @@ def personalstats():
 def estampillas():
     if "user_id" not in session:
         return redirect(url_for("index"))
-    return render_template("estampillas.html")
+    user_id = session["user_id"]
+
+    # todas las estampillas
+    stamps = Stamp.query.all()
+    for stamp in stamps: 
+        print(stamp.image)
+    # ids de las estampillas del usuario
+    user_stamps = {us.stamp_id for us in UserStamp.query.filter_by(user_id=user_id).all()}
+
+    return render_template("estampillas.html", stamps=stamps, user_stamps=user_stamps)
 
 @app.route('/logout')
 def logout():
