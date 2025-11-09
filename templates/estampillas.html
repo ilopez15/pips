@@ -1,0 +1,16 @@
+
+{% extends "base.html" %}
+{% block title %}Estampillas · PIPS{% endblock %}
+{% block content %}
+<div class="overlay">
+    <div class="maintenance">
+        <div class="maintenance-text">
+            Our servers are currently under<br>maintenance. Please try again soon.
+        </div>
+        
+        <button class="cp-orange" onclick="location.href='{{ url_for('dashboard') }}'">Okay</button>
+    </div>
+</div>
+
+<h1>Estampillas</h1>
+{% endblock %}

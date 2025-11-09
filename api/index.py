@@ -4,6 +4,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 import os
 import pytz
+from dotenv import load_dotenv
+load_dotenv()  # carga las variables del archivo .env
+
 
 last_update_date = None
 
@@ -272,6 +275,11 @@ def personalstats():
         has_data=has_data  # 👈 pásalo al template
     )
 
+@app.route('/estampillas')
+def estampillas():
+    if "user_id" not in session:
+        return redirect(url_for("index"))
+    return render_template("estampillas.html")
 
 @app.route('/logout')
 def logout():
