@@ -5,9 +5,9 @@ from datetime import datetime, timedelta
 import os
 import pytz
 
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 
-# load_dotenv()
+load_dotenv()
 
 last_update_date = None
 
@@ -294,7 +294,7 @@ def estampillas():
     user_id = session["user_id"]
 
     # todas las estampillas
-    stamps = Stamp.query.all()
+    stamps = Stamp.query.order_by(Stamp.id).all()
     for stamp in stamps: 
         print(stamp.image)
     # ids de las estampillas del usuario
