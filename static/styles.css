@@ -250,13 +250,13 @@ button[type="submit"]:disabled {
 
 .container_estampillas {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 12px;
-  width: 80%;
+  width: 90%;
   margin: auto;
   padding: 20px;
 }
+
 
 .stamp {
   position: relative;
