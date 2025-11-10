@@ -2,7 +2,7 @@
 {% extends "base.html" %}
 {% block title %}Estampillas · PIPS{% endblock %}
 {% block content %}
-{% if g.user.username != 'ilopez15' %}
+<!-- {% if g.user.username != 'ilopez15' %}
 <div class="overlay">
     <div class="maintenance">
         <div class="maintenance-text">
@@ -12,7 +12,15 @@
         <button class="cp-orange" onclick="location.href='{{ url_for('dashboard') }}'">Okay</button>
     </div>
 </div> 
-{% endif %}
+{% endif %} -->
+
+
+<div class="container-estampillas-wrapper">
+  <div class="postit-novedades">
+     Aviso: La lógica de desbloqueo de estampillas aún no está disponible. Estamos trabajando en ello.
+  </div>
+</div>
+
 
 <h1>Estampillas</h1>
 <div class="container_estampillas">

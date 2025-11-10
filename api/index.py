@@ -48,6 +48,7 @@ class Stamp(db.Model):
     name = db.Column(db.String(120), nullable=False)
     image = db.Column(db.String(255), nullable=False)
     description = db.Column(db.String(255), nullable=False)
+    category = db.Column(db.Integer, nullable=False)
 
 class UserStamp(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -294,7 +295,7 @@ def estampillas():
     user_id = session["user_id"]
 
     # todas las estampillas
-    stamps = Stamp.query.order_by(Stamp.id).all()
+    stamps = Stamp.query.order_by(Stamp.category, Stamp.id).all()
     for stamp in stamps: 
         print(stamp.image)
     # ids de las estampillas del usuario

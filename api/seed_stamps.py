@@ -4,10 +4,19 @@ from index import Stamp, UserStamp, User
 
 # Lista de estampillas a insertar
 stamps_data = [
-    {"name": "Racha corta", "image": "racha_facil.png", "description": "Resuelve todos los Pips 5 días seguidos"},
-    {"name": "Racha media", "image": "racha_media.png", "description": "Resuelve todos los Pips 10 días seguidos"},
-    {"name": "Racha larga", "image": "racha_dificil.png", "description": "Resuelve todos los Pips 30 días seguidos"},
-    {"name": "Racha extrema", "image": "racha_extrema.png", "description": "Resuelve todos los Pips 50 días seguidos"}
+    #Estampillas de racha
+    {"name": "Racha corta", "image": "racha_facil", "description": "Resuelve todos los Pips 5 días seguidos.", "category": "1"},
+    {"name": "Racha media", "image": "racha_media", "description": "Resuelve todos los Pips 10 días seguidos.", "category": "2"},
+    {"name": "Racha larga", "image": "racha_dificil", "description": "Resuelve todos los Pips 30 días seguidos.", "category": "3"},
+    {"name": "Racha extrema", "image": "racha_extrema", "description": "Resuelve todos los Pips 50 días seguidos.", "category": "4"}, 
+    # {"name": "", "image": "", "description": "", "category": ""}
+    #Estampillas de Tiempo
+    {"name": "Manos ágiles", "image": "fuego_facil", "description": "Completa el Pips easy en menos de 15 segundos.", "category": "1"},
+    {"name": "Manos rápidas", "image": "fuego_medio", "description": "Completa el Pips medium en menos de 45 segundos.", "category": "2"},
+    {"name": "Manos turbo", "image": "fuego_dificil", "description": "Completa el Pips hard en menos de 1 minuto.", "category": "3"},
+    {"name": "Speedrun", "image": "fuego_extremo", "description": "Resuelve los Pips en menos de 50 segundos cada uno, en un mismo día.", "category": "4"},
+    #Estampillas de Resistencia
+    {"name": "Prime", "image": "racha_tiempo_extrema", "description": "Haz el Pips hard en menos de 1 minuto, por 5 días seguidos.", "category": "4"}
 ]
 
 with app.app_context():

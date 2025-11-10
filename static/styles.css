@@ -354,3 +354,22 @@ button[type="submit"]:disabled {
 .stamp:hover .tooltip-content::after {
   opacity: 1;
 }
+.container-estampillas-wrapper {
+  position: relative;
+}
+
+.postit-novedades {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 220px;
+  padding: 14px 16px;
+  background: #fff7a8;
+  border: 2px solid #e3d46f;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #444;
+  box-shadow: 2px 2px 10px rgba(0,0,0,0.18);
+  transform: rotate(-2deg);
+}
