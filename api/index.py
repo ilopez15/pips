@@ -5,9 +5,9 @@ from datetime import datetime, timedelta
 import os
 import pytz
 
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 
-# load_dotenv()
+load_dotenv()
 
 last_update_date = None
 
@@ -28,6 +28,8 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
+    current_streak = db.Column(db.Integer, nullable=False, default=0)
+    last_played = db.Column(db.Date, nullable=False)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -42,6 +44,7 @@ class Result(db.Model):
     date = db.Column(db.Date, nullable=False)
     minutes = db.Column(db.Integer, nullable=False)
     seconds = db.Column(db.Integer, nullable=False)
+    
 
 class Stamp(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -59,7 +62,6 @@ def fill_missing_results():
     local_tz = pytz.timezone("Europe/Paris")
     today = datetime.now(local_tz).date()
     yesterday = today - timedelta(days=1)
-    print(yesterday)
 
     difficulties = ["Easy", "Medium", "Hard"]
     users = User.query.all()
@@ -88,6 +90,7 @@ def fill_missing_results():
                     minutes=worst.minutes,
                     seconds=worst.seconds,
                 )
+                u.current_streak = 0
                 db.session.add(new_result)
     db.session.commit()
     
@@ -154,21 +157,21 @@ def dashboard():
 def submit():
     if "user_id" not in session:
         return redirect(url_for("index"))
-    
+
     user_id = session["user_id"]
-    local_tz = pytz.timezone("Europe/Paris")  # o tu zona horaria
+    user = User.query.get(user_id)
+    local_tz = pytz.timezone("Europe/Paris")
     today = datetime.now(local_tz).date()
-    
+    stamps = {s.name: s for s in Stamp.query.filter(
+    Stamp.name.in_(["Racha corta", "Racha media", "Racha larga", "Racha extrema"])).all()}
     # Ver qué dificultades ya fueron ingresadas hoy
     submitted_results = Result.query.filter_by(user_id=user_id, date=today).all()
     submitted_today = {d: False for d in ["Easy","Medium","Hard"]}
     for r in submitted_results:
         submitted_today[r.difficulty] = True
-    print(f"[DEBUG] today = {today}")
-    print(f"[DEBUG] submitted_results = {submitted_results}")
-    print(f"[DEBUG] submitted_today = {submitted_today}")
 
     if request.method == "POST":
+        # Guardar resultados nuevos
         for diff in ["Easy","Medium","Hard"]:
             if not submitted_today[diff]:
                 min_field = f"{diff.lower()}_min"
@@ -179,11 +182,29 @@ def submit():
                     result = Result(user_id=user_id, difficulty=diff, date=today,
                                     minutes=minutes, seconds=seconds)
                     db.session.add(result)
+                    submitted_today[diff] = True  # marcar como ingresado
+        
+        if all(submitted_today.values()) and user.last_played != today:
+            yesterday = today - timedelta(days=1)
+            if user.last_played == yesterday:
+                user.current_streak += 1
+                rachas = {5: "Racha corta", 10: "Racha media", 30: "Racha larga", 50: "Racha extrema"}
+                for days, stamp_name in rachas.items():
+                    if user.current_streak == days:
+                        stamp = stamps.get(stamp_name)
+                        if stamp and not UserStamp.query.filter_by(user_id=user.id, stamp_id=stamp.id).first():
+                            db.session.add(UserStamp(user_id=user.id, stamp_id=stamp.id))
+            else:   
+                user.current_streak = 1
+            user.last_played = today
+
         db.session.commit()
         flash("Resultados guardados", "success")
         return redirect(url_for("dashboard"))
     
     return render_template("submit.html", submitted_today=submitted_today)
+
+    
 
 @app.route('/stats')
 def stats():
@@ -230,6 +251,8 @@ def stats():
 
         for u in users:
             # para cada fecha, poner el tiempo en segundos o None si no hay
+            if u == "admin":
+                continue
             data = []
             for d in dates:
                 r = next((res for res in diff_results if res.username == u and res.date == d), None)

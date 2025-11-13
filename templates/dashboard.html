@@ -10,9 +10,44 @@
     </div>
   </div>
 
-  <!-- Post-it de novedades -->
-  <a class="postit-novedades2" href="{{ url_for('estampillas') }}" >
+  <!-- <a class="postit-novedades2" href="{{ url_for('estampillas') }}">
       Revisa las novedades en la seccion de estampillas!
-  </a>
+  </a> -->
+
+  <div id="toast-container"></div>
+
+<script>
+function showToast(message) {
+    const container = document.getElementById("toast-container");
+
+    const toast = document.createElement("div");
+    toast.className = "toast";
+
+    const img = document.createElement("img");
+    img.src = "{{ url_for('static', filename='images/stamps/Easy_Game_Stamp_Base.webp') }}";
+    img.alt = "Estampilla";
+    img.className = "toast-img"; // mejor manejar el estilo por clase
+
+    const text = document.createElement("span");
+    text.textContent = message;
+
+    toast.appendChild(img);
+    toast.appendChild(text);
+    container.appendChild(toast);
+
+    // Animación de entrada
+    setTimeout(() => {
+        toast.style.transform = "translateY(0)";
+    }, 50);
+
+    // Animación de salida
+    setTimeout(() => {
+        toast.style.transform = "translateY(-120%)";
+        setTimeout(() => container.removeChild(toast), 500);
+    }, 2500);
+}
+</script>
+
+<!-- <button onclick="showToast('Stamp Earned!')">Simular Estampilla</button> -->
 
 {% endblock %}

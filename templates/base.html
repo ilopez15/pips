@@ -41,7 +41,13 @@
 
     {% block content %}{% endblock %}
   </main>
-
+  {% if g.user %}
+  <aside class="streak-box">
+      <div class="streak-inner">
+        <p class="streak-number">🔥{{ g.user.current_streak }}</p>
+      </div>
+    </aside>
+  {% endif %}
   <footer class="site-footer">
     <div class="container">
       CHUPALO JOMU · © mish {{ 2025 }}
