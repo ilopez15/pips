@@ -15,9 +15,13 @@
   </a> -->
 
   <div id="toast-container"></div>
-
+<audio src="{{ url_for('static', filename='audio/stamp_sound.mp3') }}" id="stamp_audio"></audio>
 <script>
+function playAudio(){
+  document.getElementById("stamp_audio").play();
+}
 function showToast(message) {
+    playAudio();
     const container = document.getElementById("toast-container");
 
     const toast = document.createElement("div");
@@ -27,6 +31,10 @@ function showToast(message) {
     img.src = "{{ url_for('static', filename='images/stamps/Easy_Game_Stamp_Base.webp') }}";
     img.alt = "Estampilla";
     img.className = "toast-img"; // mejor manejar el estilo por clase
+
+    const aud = document.createElement("aud"); 
+    aud.src = "{{url_for('static', filename='audio/stamp_sound.mp3')}}";
+
 
     const text = document.createElement("span");
     text.textContent = message;
@@ -38,6 +46,7 @@ function showToast(message) {
     // Animación de entrada
     setTimeout(() => {
         toast.style.transform = "translateY(0)";
+        toast.aud;
     }, 50);
 
     // Animación de salida
@@ -48,6 +57,6 @@ function showToast(message) {
 }
 </script>
 
-<!-- <button onclick="showToast('Stamp Earned!')">Simular Estampilla</button> -->
+<button onclick="showToast('Stamp Earned!')">Simular Estampilla</button>
 
 {% endblock %}
