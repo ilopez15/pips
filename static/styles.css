@@ -424,10 +424,24 @@ button[type="submit"]:disabled {
   margin-top: 0px;
 }
 
+.toast-texts {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+
 .toast-img {
   width: 60px;
   height: auto;
   flex-shrink: 0; /* evita que se deforme */
+}
+
+.toast-stamp-name {
+  font-family: "CP", sans-serif; 
+  font-size: 0.9rem;
+  color: var(--brand);
+  margin-top: 4px;
 }
 
 .streak-box {

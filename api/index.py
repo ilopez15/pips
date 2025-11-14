@@ -151,7 +151,10 @@ def register():
 def dashboard():
     if "user_id" not in session:
         return redirect(url_for("index"))
-    return render_template("dashboard.html")
+    won_stamp = session.pop('won_stamp', 0)  # lo quita de la session después de leerlo
+    won_stamp_name = session.pop('won_stamp_name', None)  # lo quita de la session después de leerlo
+    return render_template("dashboard.html", won_stamp=won_stamp, won_stamp_name=won_stamp_name)
+
 
 @app.route('/submit', methods=["GET","POST"])
 def submit():
@@ -164,6 +167,8 @@ def submit():
     today = datetime.now(local_tz).date()
     stamps = {s.name: s for s in Stamp.query.filter(
     Stamp.name.in_(["Racha corta", "Racha media", "Racha larga", "Racha extrema"])).all()}
+    session["won_stamp"] = 0
+
     # Ver qué dificultades ya fueron ingresadas hoy
     submitted_results = Result.query.filter_by(user_id=user_id, date=today).all()
     submitted_today = {d: False for d in ["Easy","Medium","Hard"]}
@@ -194,6 +199,14 @@ def submit():
                         stamp = stamps.get(stamp_name)
                         if stamp and not UserStamp.query.filter_by(user_id=user.id, stamp_id=stamp.id).first():
                             db.session.add(UserStamp(user_id=user.id, stamp_id=stamp.id))
+                            stamp_mapping = {
+                                "Racha corta": 1,
+                                "Racha media": 2,
+                                "Racha larga": 3,
+                                "Racha extrema": 4
+                            }
+                            session["won_stamp"] = stamp_mapping.get(stamp_name,0)
+                            session["won_stamp_name"] = stamp_name
             else:   
                 user.current_streak = 1
             user.last_played = today

@@ -20,43 +20,68 @@
 function playAudio(){
   document.getElementById("stamp_audio").play();
 }
-function showToast(message) {
-    playAudio();
+function showToast(message, flag, stamp_name) {
+    
     const container = document.getElementById("toast-container");
 
     const toast = document.createElement("div");
     toast.className = "toast";
 
     const img = document.createElement("img");
-    img.src = "{{ url_for('static', filename='images/stamps/Easy_Game_Stamp_Base.webp') }}";
+
+    let imgFile = '';
+    if (flag === 1) {
+        imgFile = 'images/stamps/Easy_Game_Stamp_Base.webp';
+    } else if (flag === 2) {
+        imgFile = 'images/stamps/Medium_Game_Stamp_Base.webp';
+    } else if (flag === 3) {
+        imgFile = 'images/stamps/Hard_Game_Stamp_Base.webp';
+    } else if (flag === 4) {
+        imgFile = 'images/stamps/Extreme_Game_Stamp_Base.webp';
+    } 
+    img.src = "{{ url_for('static', filename='') }}" + imgFile;
     img.alt = "Estampilla";
-    img.className = "toast-img"; // mejor manejar el estilo por clase
+    img.className = "toast-img";
 
     const aud = document.createElement("aud"); 
     aud.src = "{{url_for('static', filename='audio/stamp_sound.mp3')}}";
 
+    const textContainer = document.createElement("div");
+    textContainer.className = "toast-texts";
 
     const text = document.createElement("span");
     text.textContent = message;
 
+    const stampText = document.createElement("span");
+    stampText.textContent = stamp_name;
+    stampText.className = "toast-stamp-name"; // puedes usar CSS para estilo
+    stampText.style.display = "block";
+
+    textContainer.appendChild(text);
+    textContainer.appendChild(stampText);
+
     toast.appendChild(img);
-    toast.appendChild(text);
-    container.appendChild(toast);
+    toast.appendChild(textContainer);
 
-    // Animación de entrada
-    setTimeout(() => {
-        toast.style.transform = "translateY(0)";
-        toast.aud;
-    }, 50);
+    img.onload = () => {
+        container.appendChild(toast);
+        playAudio();
+        // Animación de entrada
+        setTimeout(() => {
+            toast.style.transform = "translateY(0)";
+        }, 50);
 
-    // Animación de salida
-    setTimeout(() => {
-        toast.style.transform = "translateY(-120%)";
-        setTimeout(() => container.removeChild(toast), 500);
-    }, 2500);
+        // Animación de salida
+        setTimeout(() => {
+            toast.style.transform = "translateY(-120%)";
+            setTimeout(() => container.removeChild(toast), 500);
+        }, 2500);
+    }
 }
 </script>
-
-<button onclick="showToast('Stamp Earned!')">Simular Estampilla</button>
-
+{% if won_stamp > 0 %}
+<script>
+  showToast('Stamp Earned!', {{won_stamp}}, {{won_stamp_name|tojson}});
+</script>
+{% endif %}
 {% endblock %}
