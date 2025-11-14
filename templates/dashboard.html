@@ -1,87 +1,94 @@
 {% extends "base.html" %}
 {% block title %}Inicio · PIPS{% endblock %}
 {% block content %}
-  <div class="hero">
+<div class="hero">
     <h1>Panel principal</h1>
     <p>Elige una opción para continuar.</p>
     <div class="actions">
       <a class="btn" href="{{ url_for('submit') }}">Ingresar resultados</a>
       <a class="btn outline" href="{{ url_for('stats') }}">Ver estadísticas</a>
     </div>
-  </div>
+</div>
 
-  <!-- <a class="postit-novedades2" href="{{ url_for('estampillas') }}">
-      Revisa las novedades en la seccion de estampillas!
-  </a> -->
-
-  <div id="toast-container"></div>
+<div id="toast-container"></div>
 <audio src="{{ url_for('static', filename='audio/stamp_sound.mp3') }}" id="stamp_audio"></audio>
+
 <script>
 function playAudio(){
-  document.getElementById("stamp_audio").play();
+    document.getElementById("stamp_audio").play();
 }
+
 function showToast(message, flag, stamp_name) {
-    
-    const container = document.getElementById("toast-container");
+    return new Promise((resolve) => {   
 
-    const toast = document.createElement("div");
-    toast.className = "toast";
+        const container = document.getElementById("toast-container");
 
-    const img = document.createElement("img");
+        const toast = document.createElement("div");
+        toast.className = "toast";
 
-    let imgFile = '';
-    if (flag === 1) {
-        imgFile = 'images/stamps/Easy_Game_Stamp_Base.webp';
-    } else if (flag === 2) {
-        imgFile = 'images/stamps/Medium_Game_Stamp_Base.webp';
-    } else if (flag === 3) {
-        imgFile = 'images/stamps/Hard_Game_Stamp_Base.webp';
-    } else if (flag === 4) {
-        imgFile = 'images/stamps/Extreme_Game_Stamp_Base.webp';
-    } 
-    img.src = "{{ url_for('static', filename='') }}" + imgFile;
-    img.alt = "Estampilla";
-    img.className = "toast-img";
+        const img = document.createElement("img");
 
-    const aud = document.createElement("aud"); 
-    aud.src = "{{url_for('static', filename='audio/stamp_sound.mp3')}}";
+        let imgFile = '';
+        if (flag === 1) imgFile = 'images/stamps/Easy_Game_Stamp_Base.webp';
+        if (flag === 2) imgFile = 'images/stamps/Medium_Game_Stamp_Base.webp';
+        if (flag === 3) imgFile = 'images/stamps/Hard_Game_Stamp_Base.webp';
+        if (flag === 4) imgFile = 'images/stamps/Extreme_Game_Stamp_Base.webp';
 
-    const textContainer = document.createElement("div");
-    textContainer.className = "toast-texts";
+        img.src = "{{ url_for('static', filename='') }}" + imgFile;
+        img.alt = "Estampilla";
+        img.className = "toast-img";
 
-    const text = document.createElement("span");
-    text.textContent = message;
+        const textContainer = document.createElement("div");
+        textContainer.className = "toast-texts";
 
-    const stampText = document.createElement("span");
-    stampText.textContent = stamp_name;
-    stampText.className = "toast-stamp-name"; // puedes usar CSS para estilo
-    stampText.style.display = "block";
+        const text = document.createElement("span");
+        text.textContent = message;
 
-    textContainer.appendChild(text);
-    textContainer.appendChild(stampText);
+        const stampText = document.createElement("span");
+        stampText.textContent = stamp_name;
+        stampText.className = "toast-stamp-name";
+        stampText.style.display = "block";
 
-    toast.appendChild(img);
-    toast.appendChild(textContainer);
+        textContainer.appendChild(text);
+        textContainer.appendChild(stampText);
 
-    img.onload = () => {
-        container.appendChild(toast);
-        playAudio();
-        // Animación de entrada
-        setTimeout(() => {
-            toast.style.transform = "translateY(0)";
-        }, 50);
+        toast.appendChild(img);
+        toast.appendChild(textContainer);
 
-        // Animación de salida
-        setTimeout(() => {
-            toast.style.transform = "translateY(-120%)";
-            setTimeout(() => container.removeChild(toast), 500);
-        }, 2500);
-    }
+        img.onload = () => {
+            container.appendChild(toast);
+            playAudio();
+
+            // Animación de entrada
+            setTimeout(() => {
+                toast.style.transform = "translateY(0)";
+            }, 50);
+
+            // Animación de salida
+            setTimeout(() => {
+                toast.style.transform = "translateY(-120%)";
+                setTimeout(() => {
+                    container.removeChild(toast);
+                    resolve();  
+                }, 500);
+
+            }, 2500);
+        };
+
+    });
 }
+
+async function runStampQueue() {
+    {% for i in range(won_stamps|length) %}
+        await showToast(
+            'Stamp Earned!',
+            {{ won_stamps[i] }},
+            {{ won_stamp_names[i] | tojson }}
+        );
+    {% endfor %}
+}
+
+runStampQueue();
 </script>
-{% if won_stamp > 0 %}
-<script>
-  showToast('Stamp Earned!', {{won_stamp}}, {{won_stamp_name|tojson}});
-</script>
-{% endif %}
+
 {% endblock %}

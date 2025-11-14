@@ -151,9 +151,9 @@ def register():
 def dashboard():
     if "user_id" not in session:
         return redirect(url_for("index"))
-    won_stamp = session.pop('won_stamp', 0)  # lo quita de la session después de leerlo
-    won_stamp_name = session.pop('won_stamp_name', None)  # lo quita de la session después de leerlo
-    return render_template("dashboard.html", won_stamp=won_stamp, won_stamp_name=won_stamp_name)
+    won_stamps = session.pop('won_stamps', [])  # lo quita de la session después de leerlo
+    won_stamp_names = session.pop('won_stamp_names', [])  # lo quita de la session después de leerlo
+    return render_template("dashboard.html", won_stamps=won_stamps, won_stamp_names=won_stamp_names)
 
 
 @app.route('/submit', methods=["GET","POST"])
@@ -165,9 +165,16 @@ def submit():
     user = User.query.get(user_id)
     local_tz = pytz.timezone("Europe/Paris")
     today = datetime.now(local_tz).date()
-    stamps = {s.name: s for s in Stamp.query.filter(
+
+    #{nombre: Stamp()}
+    stamps_racha = {s.name: s for s in Stamp.query.filter(
     Stamp.name.in_(["Racha corta", "Racha media", "Racha larga", "Racha extrema"])).all()}
-    session["won_stamp"] = 0
+    stamps_tiempo = {s.name: s for s in Stamp.query.filter(
+    Stamp.name.in_(["Manos ágiles", "Manos rápidas", "Manos turbo", "Speedrun"])).all()}
+
+    #Flag con la categoria de la stamp
+    session["won_stamps"] = []
+    session["won_stamp_names"] = []
 
     # Ver qué dificultades ya fueron ingresadas hoy
     submitted_results = Result.query.filter_by(user_id=user_id, date=today).all()
@@ -175,9 +182,29 @@ def submit():
     for r in submitted_results:
         submitted_today[r.difficulty] = True
 
+    
     if request.method == "POST":
-        # Guardar resultados nuevos
+
+        #{Dificultad: nombre}
+        stamp_mapping = {
+            "Easy": "Manos ágiles",
+            "Medium": "Manos rápidas",
+            "Hard": "Manos turbo",
+            "Extreme": "Speedrun"
+        }
+
+        #{Dificultad: segundos}
+        limites_stamp_tiempo = {
+            "Easy": 15, 
+            "Medium": 45,
+            "Hard": 60
+        }
+
+        #Ganas speedrun si llega a 3
+        speedrun_flag = 0
+
         for diff in ["Easy","Medium","Hard"]:
+
             if not submitted_today[diff]:
                 min_field = f"{diff.lower()}_min"
                 sec_field = f"{diff.lower()}_sec"
@@ -186,27 +213,49 @@ def submit():
                     seconds = int(request.form[sec_field])
                     result = Result(user_id=user_id, difficulty=diff, date=today,
                                     minutes=minutes, seconds=seconds)
+                    
+                    if minutes == 0 and seconds < 50: 
+                        speedrun_flag += 1
+
+                    possible_stamp = stamps_tiempo.get(stamp_mapping[diff])
+                    if minutes*60 + seconds < limites_stamp_tiempo[diff] and not UserStamp.query.filter_by(user_id=user.id, stamp_id=possible_stamp.id).first():
+                        db.session.add(UserStamp(user_id=user.id, stamp_id=possible_stamp.id))
+
+                        session["won_stamps"].append(possible_stamp.category)
+                        session["won_stamp_names"].append(possible_stamp.name)
+
                     db.session.add(result)
                     submitted_today[diff] = True  # marcar como ingresado
         
-        if all(submitted_today.values()) and user.last_played != today:
+        if all(submitted_today.values()):
+            # obtener los 3 resultados de hoy
+            results_today = Result.query.filter_by(user_id=user.id, date=today).all()
+
+            # contar cuántos son <50 segundos
+            under_50 = 0
+            for r in results_today:
+                if r.minutes == 0 and r.seconds < 50:
+                    under_50 += 1
+
+            # si los 3 lo cumplen → speedrun
+            if under_50 == 3:
+                speedrun_stamp = stamps_tiempo.get("Speedrun")
+                if speedrun_stamp and not UserStamp.query.filter_by(user_id=user.id, stamp_id=speedrun_stamp.id).first():
+                    db.session.add(UserStamp(user_id=user.id, stamp_id=speedrun_stamp.id))
+                    session["won_stamps"].append(speedrun_stamp.category)
+                    session["won_stamp_names"].append(speedrun_stamp.name)
+
             yesterday = today - timedelta(days=1)
             if user.last_played == yesterday:
                 user.current_streak += 1
                 rachas = {5: "Racha corta", 10: "Racha media", 30: "Racha larga", 50: "Racha extrema"}
                 for days, stamp_name in rachas.items():
                     if user.current_streak == days:
-                        stamp = stamps.get(stamp_name)
+                        stamp = stamps_racha.get(stamp_name)
                         if stamp and not UserStamp.query.filter_by(user_id=user.id, stamp_id=stamp.id).first():
                             db.session.add(UserStamp(user_id=user.id, stamp_id=stamp.id))
-                            stamp_mapping = {
-                                "Racha corta": 1,
-                                "Racha media": 2,
-                                "Racha larga": 3,
-                                "Racha extrema": 4
-                            }
-                            session["won_stamp"] = stamp_mapping.get(stamp_name,0)
-                            session["won_stamp_name"] = stamp_name
+                            session["won_stamps"].append(stamp.category)
+                            session["won_stamp_names"].append(stamp_name)
             else:   
                 user.current_streak = 1
             user.last_played = today
