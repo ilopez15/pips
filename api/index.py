@@ -95,12 +95,45 @@ def fill_missing_results():
     db.session.commit()
     
 
-# Rellenar g.user para base.html
 @app.before_request
 def load_user():
     g.user = None
+    g.streak_active = False
+    g.streak_color = "var(--panel)"  # fallback
+
     if "user_id" in session:
-        g.user = User.query.get(session["user_id"])
+        user = User.query.get(session["user_id"])
+        g.user = user
+
+        # calcular si jugó HOY (Europe/Paris)
+        local_tz = pytz.timezone("Europe/Paris")
+        today = datetime.now(local_tz).date()
+
+        # Si last_played está definido y es igual a hoy => activo
+        try:
+            g.streak_active = (user.last_played == today)
+        except Exception:
+            # si por alguna razón last_played es None o mal, lo consideramos inactivo
+            g.streak_active = False
+
+        # Elegir color según la racha (puedes ajustar colores)
+        s = (user.current_streak or 0)
+        if not g.streak_active:
+            # gris cuando no jugó hoy
+            g.streak_color = "#3b3b3b"
+        else:
+            # Paleta por rangos
+            if s >= 50:
+                g.streak_color = "#ef4444"  # rojo extremo
+            elif s >= 30:
+                g.streak_color = "#3b82f6"  # violeta
+            elif s >= 10:
+                g.streak_color = "#ffcc3e"  # amarillo
+            elif s >= 5:
+                g.streak_color = "#22c55e"  # verde
+            else:
+                g.streak_color = "#aaf7ff"  # neutro oscuro para rachas pequeñas
+
 
 
 @app.before_request

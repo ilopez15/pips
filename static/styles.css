@@ -447,27 +447,46 @@ button[type="submit"]:disabled {
 .streak-box {
   position: fixed;
   right: 20px;
-  top: 120px;
-  background: var(--panel);
+  top: 120px;            /* tu valor original */
+  background: var(--streak-bg, var(--panel));
   color: var(--text);
-  padding: 20px;
+  padding: 10px 14px;
   border-radius: 12px;
-  box-shadow: 0 0 12px rgba(0,0,0,0.35);
-  width: 180px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
   z-index: 5;
+  width: auto;           /* que se ajuste al contenido */
+  min-width: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,0.03);
 }
 
-.streak-inner h3 {
-  margin: 0 0 10px 0;
-  font-weight: 600;
-  font-size: 18px;
-  color: var(--brand);
-}
+/* si quieres que aparezca compacto y en columna dentro */
+.streak-inner { text-align: center; }
 
+/* tamaño del número principal */
 .streak-number {
+  font-family: "CP", sans-serif;
+  /* -webkit-text-stroke: 1px #000; */
+  text-shadow:
+    -1px -1px 0 #000,
+     1px -1px 0 #000,
+    -1px  1px 0 #000,
+     1px  1px 0 #000;
   font-size: 38px;
-  font-weight: 700;
-  text-align: center;
+  font-weight: 800;
   margin: 0;
-  color: var(--accent);
+  color: var(--streak-number, white);
+}
+
+/* estado INACTIVO (no jugó hoy): atenuado */
+.streak-box.inactive {
+  filter: grayscale(100%);
+  opacity: 0.85;
+  box-shadow: none;
+  transform: translateY(0);
+}
+.subtitle_stamps {
+  color: gray;
 }

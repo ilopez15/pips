@@ -26,6 +26,7 @@
 
 
 <h1>Estampillas</h1>
+<h2 class="subtitle_stamps">{{user_stamps|length}}/{{stamps|count}}</h2>
 <div class="container_estampillas">
     {% for stamp in stamps %}
     <div class="stamp {% if stamp.id not in user_stamps %}locked{% endif %}"

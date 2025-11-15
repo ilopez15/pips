@@ -43,12 +43,14 @@
   </main>
   
   {% if g.user %}
-  <aside class="streak-box">
+  <aside class="streak-box {% if not g.streak_active %}inactive{% endif %}"
+        style="--streak-bg: {{ g.streak_color }};">
     <div class="streak-inner">
       <p class="streak-number">🔥{{ g.user.current_streak }}</p>
     </div>
   </aside>
   {% endif %}
+
 
   <footer class="site-footer">
     <div class="container">
