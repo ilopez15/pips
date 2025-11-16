@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+{% block title %}Leaderboard · PIPS{% endblock %}
+
+{% block content %}
+
+<div class="leaderboard-wrapper">
+    <h1>🏆 Leaderboard</h1>
+
+    <label for="sort-select" class="sort-label">Ordenar por:</label>
+    <select id="sort-select" class="sort-select">
+        <option value="streak">Racha</option>
+        <option value="avg_easy">Promedio Easy</option>
+        <option value="avg_medium">Promedio Medium</option>
+        <option value="avg_hard">Promedio Hard</option>
+        <option value="stamps">Estampillas</option>
+    </select>
+
+    <table class="leaderboard-table" id="leaderboard-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th data-sort="username">Nombre</th>
+                <th data-sort="streak">Racha</th>
+                <th data-sort="avg_easy">Easy</th>
+                <th data-sort="avg_medium">Med</th>
+                <th data-sort="avg_hard">Hard</th>
+                <th data-sort="stamps">Stamps</th>
+            </tr>
+        </thead>
+        <tbody id="leaderboard-body">
+            {% for row in data %}
+            <tr>
+                <td class="position-cell" data-position="{{ loop.index }}">{{ loop.index }}</td>
+                <td>{{ row.username }}</td>
+                <td data-val="{{ row.streak }}">{{ row.streak }}</td>
+                <td data-val="{{ row.avg_easy or 99999 }}">
+                    {% if row.avg_easy %}
+                        {% set m = (row.avg_easy // 60)|int %}
+                        {% set s = (row.avg_easy % 60)|int %}
+                        {{ m }}m{{ "%02d"|format(s) }}s
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td data-val="{{ row.avg_medium or 99999 }}">
+                    {% if row.avg_medium %}
+                        {% set m = (row.avg_medium // 60)|int %}
+                        {% set s = (row.avg_medium % 60)|int %}
+                        {{ m }}m{{ "%02d"|format(s) }}s
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td data-val="{{ row.avg_hard or 99999 }}">
+                    {% if row.avg_hard %}
+                        {% set m = (row.avg_hard // 60)|int %}
+                        {% set s = (row.avg_hard % 60)|int %}
+                        {{ m }}m{{ "%02d"|format(s) }}s
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td data-val="{{ row.stamps }}">{{ row.stamps }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+// Ordenamiento dinámico
+const select = document.getElementById("sort-select");
+const tbody = document.getElementById("leaderboard-body");
+let currentSort = "streak";
+
+function sortTable() {
+    const key = select.value;
+    currentSort = key;
+
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    // Sorting - siempre en modo "ganador"
+    rows.sort((a, b) => {
+        const colIndex = getColumnIndex(key);
+        const aVal = parseFloat(a.cells[colIndex].dataset.val);
+        const bVal = parseFloat(b.cells[colIndex].dataset.val);
+
+        // Tiempos: menor es mejor
+        if (["avg_easy", "avg_medium", "avg_hard"].includes(key)) {
+            return aVal - bVal;
+        }
+
+        // Racha y stamps: mayor es mejor
+        return bVal - aVal;
+    });
+
+    tbody.innerHTML = "";
+    
+    // Actualizar posiciones y añadir filas
+    rows.forEach((r, index) => {
+        const positionCell = r.querySelector('.position-cell');
+        positionCell.textContent = index + 1;
+        positionCell.dataset.position = index + 1;
+        tbody.appendChild(r);
+    });
+
+    // Actualizar highlight de columna
+    updateColumnHighlight(key);
+}
+
+function getColumnIndex(key) {
+    const indices = {
+        "streak": 2,
+        "avg_easy": 3,
+        "avg_medium": 4,
+        "avg_hard": 5,
+        "stamps": 6
+    };
+    return indices[key];
+}
+
+function updateColumnHighlight(sortKey) {
+    // Remover highlights anteriores
+    document.querySelectorAll('th[data-sort]').forEach(th => {
+        th.classList.remove('sorting-active');
+    });
+    
+    document.querySelectorAll('tbody td').forEach(td => {
+        td.classList.remove('sorted-column');
+    });
+
+    // Aplicar nuevo highlight
+    const activeHeader = document.querySelector(`th[data-sort="${sortKey}"]`);
+    if (activeHeader) {
+        activeHeader.classList.add('sorting-active');
+        
+        // Highlight en las celdas del cuerpo
+        const colIndex = getColumnIndex(sortKey);
+        document.querySelectorAll(`tbody tr`).forEach(tr => {
+            if (tr.cells[colIndex]) {
+                tr.cells[colIndex].classList.add('sorted-column');
+            }
+        });
+    }
+}
+
+// Hacer las columnas clickeables
+document.querySelectorAll('th[data-sort]').forEach(th => {
+    th.style.cursor = 'pointer';
+    th.addEventListener('click', () => {
+        select.value = th.dataset.sort;
+        sortTable();
+    });
+});
+
+select.addEventListener("change", sortTable);
+window.onload = sortTable;
+
+</script>
+
+<style>
+/* Header activo */
+th.sorting-active {
+    background: linear-gradient(180deg, rgba(113, 183, 255, 0.15), rgba(113, 183, 255, 0.05));
+    border-bottom: 2px solid var(--brand);
+    position: relative;
+}
+
+/* Highlight en celdas del cuerpo */
+td.sorted-column {
+    background: rgba(113, 183, 255, 0.08);
+    position: relative;
+}
+
+td.sorted-column::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--brand);
+}
+
+/* Efecto hover en headers */
+th[data-sort]:hover {
+    background: rgba(113, 183, 255, 0.1);
+    transition: background 0.2s ease;
+}
+
+/* Posiciones */
+.position-cell {
+    font-weight: 700;
+    color: var(--brand);
+    text-align: center;
+    width: 50px;
+}
+
+.leaderboard-table tr:nth-child(1) .position-cell {
+    color: gold;
+    font-size: 1.1em;
+}
+
+.leaderboard-table tr:nth-child(2) .position-cell {
+    color: silver;
+    font-size: 1.05em;
+}
+
+.leaderboard-table tr:nth-child(3) .position-cell {
+    color: #cd7f32;
+    font-size: 1.05em;
+}
+
+.leaderboard-table th:nth-child(1),
+.leaderboard-table td:nth-child(1) {
+    width: 60px;
+}
+
+.leaderboard-table th:nth-child(2),
+.leaderboard-table td:nth-child(2) {
+    text-align: left;
+    padding-left: 16px;
+}
+</style>
+
+{% endblock %}

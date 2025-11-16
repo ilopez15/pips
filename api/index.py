@@ -421,6 +421,45 @@ def estampillas():
 
     return render_template("estampillas.html", stamps=stamps, user_stamps=user_stamps)
 
+@app.route('/leaderboard')
+def leaderboard():
+    if "user_id" not in session: 
+        return redirect(url_for("index"))
+
+    # Obtener todos los usuarios excepto admin
+    users = User.query.filter(User.username != "admin").all()
+
+    data = []
+    for u in users:
+        # Racha
+        streak = u.current_streak
+
+        # Estampillas
+        stamp_count = UserStamp.query.filter_by(user_id=u.id).count()
+
+        # Promedios
+        averages = {}
+        for diff in ["Easy", "Medium", "Hard"]:
+            res = db.session.query(
+                db.func.avg(Result.minutes*60 + Result.seconds)
+            ).filter_by(user_id=u.id, difficulty=diff).scalar()
+            averages[diff] = res if res else None
+
+        data.append({
+            "username": u.username,
+            "streak": streak,
+            "stamps": stamp_count,
+            "avg_easy": averages["Easy"],
+            "avg_medium": averages["Medium"],
+            "avg_hard": averages["Hard"],
+        })
+
+    return render_template("leaderboard.html", data=data)
+
+    
+
+
+
 @app.route('/logout')
 def logout():
     session.pop("user_id", None)
