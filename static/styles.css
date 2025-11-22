@@ -544,12 +544,11 @@ button[type="submit"]:disabled {
     overflow-y: hidden;
     white-space: nowrap;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
     gap: 1rem;
     padding: 0.5rem 0;
     margin-left: 0;
-    
-    /* Efecto de desvanecimiento en los bordes */
+
+    /* Efecto fade opcional */
     mask-image: linear-gradient(
         90deg,
         transparent 0%,
@@ -562,7 +561,7 @@ button[type="submit"]:disabled {
 /* Mostrar scrollbar sutil en desktop */
 .site-header nav::-webkit-scrollbar {
     display: block;
-    height: 4px;
+    height: 5px;
 }
 
 .site-header nav::-webkit-scrollbar-track {
@@ -571,7 +570,7 @@ button[type="submit"]:disabled {
 }
 
 .site-header nav::-webkit-scrollbar-thumb {
-    background: var(--brand);
+    background: var(--text);
     border-radius: 2px;
 }
 

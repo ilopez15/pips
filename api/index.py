@@ -241,9 +241,15 @@ def submit():
             if not submitted_today[diff]:
                 min_field = f"{diff.lower()}_min"
                 sec_field = f"{diff.lower()}_sec"
-                if request.form.get(min_field) and request.form.get(sec_field):
-                    minutes = int(request.form[min_field])
-                    seconds = int(request.form[sec_field])
+                if request.form.get(min_field) or request.form.get(sec_field):
+                    minutes = 0
+                    seconds = 0
+                    if request.form.get(min_field): 
+                        minutes = int(request.form[min_field])
+                        
+                    if request.form.get(sec_field): 
+                        seconds = int(request.form[sec_field])
+                        
                     result = Result(user_id=user_id, difficulty=diff, date=today,
                                     minutes=minutes, seconds=seconds)
                     
