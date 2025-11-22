@@ -46,4 +46,20 @@
     {% endfor %}
 
 </div>
+
+<div id="secretDiv" style="cursor: pointer; width: 1px; height: 1px; padding: 10px;">
+</div>
+
+<audio id="audio_s" loop>
+    <source src="{{ url_for('static', filename='audio/cp.mp3') }}" type="audio/mp3">
+    Tu navegador no soporta la etiqueta de audio.
+</audio>
+
+
+<script>
+    document.getElementById('secretDiv').addEventListener('click', function() {
+        var audio = document.getElementById('audio_s');
+        audio.play(); 
+    });
+</script>
 {% endblock %}
