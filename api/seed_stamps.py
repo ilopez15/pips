@@ -16,7 +16,9 @@ stamps_data = [
     {"name": "Manos turbo", "image": "fuego_dificil", "description": "Completa el Pips hard en menos de 1 minuto.", "category": "3"},
     {"name": "Speedrun", "image": "fuego_extremo", "description": "Resuelve los Pips en menos de 50 segundos cada uno, en un mismo día.", "category": "4"},
     #Estampillas de Resistencia
-    {"name": "Prime", "image": "racha_tiempo_extrema", "description": "Haz el Pips hard en menos de 1 minuto, por 5 días seguidos.", "category": "4"}
+    {"name": "Prime", "image": "racha_tiempo_extrema", "description": "Haz el Pips hard en menos de 1 minuto, por 5 días seguidos.", "category": "4"},
+    #Estampillas miscelaneas
+    {"name": "Precoz", "image": "medianoche_media", "description": "Completa todos los Pips en los primeros 5 minutos del día.", "category": "2"}
 ]
 
 with app.app_context():

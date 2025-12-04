@@ -5,9 +5,9 @@ from datetime import datetime, timedelta
 import os
 import pytz
 
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 
-# load_dotenv()
+load_dotenv()
 
 last_update_date = None
 
@@ -204,6 +204,9 @@ def submit():
     Stamp.name.in_(["Racha corta", "Racha media", "Racha larga", "Racha extrema"])).all()}
     stamps_tiempo = {s.name: s for s in Stamp.query.filter(
     Stamp.name.in_(["Manos ágiles", "Manos rápidas", "Manos turbo", "Speedrun"])).all()}
+    stamps_misc = {s.name: s for s in Stamp.query.filter(
+    Stamp.name.in_(["Precoz"])).all()}
+    
 
     #Flag con la categoria de la stamp
     session["won_stamps"] = []
@@ -298,6 +301,13 @@ def submit():
             else:   
                 user.current_streak = 1
             user.last_played = today
+
+            stamp_precoz = stamps_misc.get("Precoz")
+            if not UserStamp.query.filter_by(user_id=user.id, stamp_id=stamp_precoz.id).first() and datetime.now().strftime("%H") == "00" and int(datetime.now().strftime("%M")) < 5: 
+                db.session.add(UserStamp(user_id=user.id, stamp_id=stamp_precoz.id))
+                session["won_stamps"].append(stamp_precoz.category)
+                session["won_stamp_names"].append("Precoz")
+                
 
         db.session.commit()
         flash("Resultados guardados", "success")
