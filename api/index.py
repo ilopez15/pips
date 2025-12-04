@@ -5,9 +5,9 @@ from datetime import datetime, timedelta
 import os
 import pytz
 
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
-load_dotenv()
+# load_dotenv()
 
 last_update_date = None
 
